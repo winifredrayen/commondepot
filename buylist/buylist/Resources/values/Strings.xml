@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="Hello">Hello World, Click Me!</string>
-    <string name="ApplicationName">buylist</string>
+    <string name="ApplicationName">Buyer\'s List</string>
+    <string name="welcometext">Welcome to Buyer\'s list</string>
+    <string name="pdtdesc">Tell us what you are willing to buy, it\'s approx. price, it\'s priority and your month\'s shopping budget.
+    And we will tell you which items fit in for the month ! Simple as that..</string>
+    <string name="gobtn">Enter</string>
 </resources>
