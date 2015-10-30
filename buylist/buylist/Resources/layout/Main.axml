@@ -4,4 +4,56 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:minWidth="25px"
-    android:minHeight="25px" />
+    android:minHeight="25px">
+    <TextView
+        android:text="@string/welcometext"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/mainheader"
+        android:gravity="center"
+        android:layout_weight="1.25"
+        android:padding="5dp" />
+    <TextView
+        android:text="@string/first_line"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/descripion1"
+        android:gravity="center_horizontal"
+        android:layout_weight="1"
+        android:padding="5dp" />
+    <TextView
+        android:text="@string/second_line"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:id="@+id/descripion2"
+        android:padding="5dp" />
+    <TextView
+        android:text="@string/third_line"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:id="@+id/descripion3"
+        android:padding="5dp" />
+    <TextView
+        android:text="@string/fourth_line"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.25"
+        android:gravity="center_horizontal"
+        android:id="@+id/descripion4"
+        android:padding="5dp"
+        android:layout_gravity="top" />
+    <Button
+        android:text="@string/gobtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gobutton" />
+</LinearLayout>

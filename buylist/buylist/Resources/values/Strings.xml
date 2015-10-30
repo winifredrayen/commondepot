@@ -2,7 +2,10 @@
 <resources>
     <string name="ApplicationName">Buyer\'s List</string>
     <string name="welcometext">Welcome to Buyer\'s list</string>
-    <string name="pdtdesc">Tell us what you are willing to buy, it\'s approx. price, it\'s priority and your month\'s shopping budget.
-    And we will tell you which items fit in for the month ! Simple as that..</string>
-    <string name="gobtn">Enter</string>
+    <string name="first_line">Are you looking to buy something?</string>
+    <string name="second_line">What is it\'s approximate price?</string>
+    <string name="third_line">Do you have a priority?</string>
+    <string name="fourth_line">Just give us your rough monthly shopping budget,
+    and we\'ll help you get the items at the right time !</string>
+    <string name="gobtn">Go</string>
 </resources>
