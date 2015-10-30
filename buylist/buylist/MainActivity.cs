@@ -15,6 +15,12 @@ namespace buylist
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.Main);
+
+            Button gobtn = FindViewById<Button>(Resource.Id.gobutton);
+            gobtn.Click += delegate
+            {
+                StartActivity(typeof(BuyListInputFormActivity));
+            };
         }
     }
 }
