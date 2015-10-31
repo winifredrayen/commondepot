@@ -25,27 +25,26 @@ namespace buylist
             SetContentView(Resource.Layout.ItemInputForm);
 
             // create DB path
-            var docsFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-            var pathToDatabase = System.IO.Path.Combine(docsFolder, "shoplist.db");
-            var dbhanlder = new DBHelper(pathToDatabase);
+            var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            var path_to_database = System.IO.Path.Combine(docs_folder, "shoplist.db");
 
-            var cost = FindViewById<EditText>(Resource.Id.itemCost);
-            var describe = FindViewById<EditText>(Resource.Id.item_desc);
-            var brief = FindViewById<EditText>(Resource.Id.item_brief);
+            //create the db helper class
+            var dbhelper = new DBHelper(path_to_database);
+
+            //get the cost, priority, item description from the user
+            EditText cost = FindViewById<EditText>(Resource.Id.itemCost);
+            EditText describe = FindViewById<EditText>(Resource.Id.item_desc);
+            EditText brief = FindViewById<EditText>(Resource.Id.item_brief);
             RatingBar priority = FindViewById<RatingBar>(Resource.Id.priority);
 
-            ShopItem sitem;
-            Button savebtn = FindViewById<Button>(Resource.Id.savebtn);
-            savebtn.Enabled = false;
-
-            var result = dbhanlder.createDatabase();
+            var result = dbhelper.create_database();
             if (result == "Database created")
             {
-                savebtn.Enabled = true;
-             
+                Toast.MakeText(this, "Sorry, database creation has failed. Try clearing the data in application settings.", ToastLength.Long).Show();
+                Finish();
             }
-            
 
+            Button savebtn = FindViewById<Button>(Resource.Id.savebtn);
             savebtn.Click += delegate
             {
                 if( !evaluateInput(cost.Text,priority.Rating,brief.Text) )
@@ -57,10 +56,10 @@ namespace buylist
                     double costvalue = Double.Parse(cost.Text);
                     double priority_star = Double.Parse(priority.Rating.ToString());
 
-                    sitem = new ShopItem { ItemBrief = brief.Text, ItemCost = costvalue, ItemDescription = describe.Text, ItemPriority = priority_star };
-                    result = dbhanlder.insertUpdateData(sitem);
+                    ShopItem shopping_item = new ShopItem { ItemBrief = brief.Text, ItemCost = costvalue, ItemDescription = describe.Text, ItemPriority = priority_star };
+                    result = dbhelper.insert_update_data(shopping_item);
 
-                    var records = dbhanlder.findNumberRecords();
+                    var records = dbhelper.get_total_records();
                     Finish();
                 }
             };
@@ -68,11 +67,11 @@ namespace buylist
 
         private bool evaluateInput(string cost, float rating, string brief)
         {
-            if (cost.Equals(String.Empty))
+            if ( cost.Equals(String.Empty) )
             {
                 return false;
             }
-            if(rating == 0)
+            if( 0 == rating )
             {
                 return false;
             }

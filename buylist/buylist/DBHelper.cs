@@ -22,7 +22,7 @@ namespace buylist
         {
             db_path = path;
         }
-        public string createDatabase()
+        public string create_database()
         {
             try
             {
@@ -36,7 +36,7 @@ namespace buylist
             }
         }
 
-        public string insertUpdateData(ShopItem data)
+        public string insert_update_data(ShopItem data)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace buylist
             }
         }
 
-        public string insertUpdateAllData(IEnumerable<ShopItem> data)
+        public string insert_update_all(IEnumerable<ShopItem> data)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace buylist
             }
         }
 
-        public int findNumberRecords()
+        public int get_total_records()
         {
             try
             {
