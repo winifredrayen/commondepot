@@ -2,11 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:minWidth="25px"
-    android:minHeight="25px">
+    android:layout_height="fill_parent">
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_gravity="center_horizontal">
+        <Button
+            android:layout_alignParentLeft="true"
+            android:text="add shopping item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/additem"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="5dp" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="add/modify budget"
+            android:layout_height="wrap_content"
+            android:id="@+id/getbudget"
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="5dp" />
+    </RelativeLayout>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/existinglist" />
+        android:id="@+id/existinglist"
+        android:layout_gravity="center_horizontal" />
 </LinearLayout>

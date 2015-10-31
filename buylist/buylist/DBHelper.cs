@@ -67,8 +67,16 @@ namespace buylist
         }
         public IEnumerable<ShopItem> query_selected_values(string cmd)
         {
-            var db = new SQLiteConnection(db_path);
-            return db.Query<ShopItem>(cmd);
+            try
+            {
+                var db = new SQLiteConnection(db_path);
+                return db.Query<ShopItem>(cmd);
+            }
+            catch (SQLiteException ex)
+            {
+                Console.WriteLine("exception handled", ex.Message);
+            }
+            return null;
         }
         public int get_total_records()
         {

@@ -32,16 +32,35 @@ namespace buylist
 
             mItems = new List<string>();
             //it returns a value of the IEnumerable type "selected_table" from selected_table.cs
-            foreach ( var shopping_item in dbhelper.query_selected_values("select ID,ItemBrief from ShopItem") )
+            var db_list = dbhelper.query_selected_values("select ID,ItemBrief from ShopItem");
+
+            //if there were no entries then we might hv got a null, in that case, take them to add a new entry
+            if (db_list != null)
             {
-                mItems.Add(shopping_item.ItemBrief);
+                foreach (var shopping_item in db_list)
+                {
+                    mItems.Add(shopping_item.ItemBrief);
+                }
             }
+
 
             mListview = FindViewById<ListView>(Resource.Id.existinglist);
 
             ListViewAdapter adapter = new ListViewAdapter(this, mItems);
             mListview.Adapter = adapter;
 
+            Button additem = FindViewById<Button>(Resource.Id.additem);
+            Button getbudget = FindViewById<Button>(Resource.Id.getbudget);
+
+            additem.Click += delegate
+            {
+                //for now its buylistform, later we need to take them to the existing list
+                StartActivity(typeof(BuyListInputFormActivity));
+            };
+            getbudget.Click += delegate
+            {
+
+            };
         }
     }
 }
