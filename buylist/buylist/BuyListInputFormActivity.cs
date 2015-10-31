@@ -38,7 +38,7 @@ namespace buylist
             RatingBar priority = FindViewById<RatingBar>(Resource.Id.priority);
 
             var result = dbhelper.create_database();
-            if (result == "Database created")
+            if (result != "Database created")
             {
                 Toast.MakeText(this, "Sorry, database creation has failed. Try clearing the data in application settings.", ToastLength.Long).Show();
                 Finish();

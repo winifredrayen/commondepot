@@ -20,6 +20,7 @@ namespace buylist
             gobtn.Click += delegate
             {
                 StartActivity(typeof(BuyListInputFormActivity));
+                //StartActivity(typeof(ExistingList)); 
             };
         }
     }

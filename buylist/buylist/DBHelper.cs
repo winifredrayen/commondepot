@@ -65,7 +65,11 @@ namespace buylist
                 return ex.Message;
             }
         }
-
+        public IEnumerable<ShopItem> query_selected_values(string cmd)
+        {
+            var db = new SQLiteConnection(db_path);
+            return db.Query<ShopItem>(cmd);
+        }
         public int get_total_records()
         {
             try
