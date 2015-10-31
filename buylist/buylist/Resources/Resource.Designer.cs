@@ -60,32 +60,38 @@ namespace buylist
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f050004
-			public const int descripion1 = 2131034116;
-			
-			// aapt resource value: 0x7f050005
-			public const int descripion2 = 2131034117;
-			
 			// aapt resource value: 0x7f050006
-			public const int descripion3 = 2131034118;
+			public const int descripion1 = 2131034118;
 			
 			// aapt resource value: 0x7f050007
-			public const int descripion4 = 2131034119;
+			public const int descripion2 = 2131034119;
 			
 			// aapt resource value: 0x7f050008
-			public const int gobutton = 2131034120;
+			public const int descripion3 = 2131034120;
 			
-			// aapt resource value: 0x7f050000
-			public const int itemCost = 2131034112;
+			// aapt resource value: 0x7f050009
+			public const int descripion4 = 2131034121;
 			
-			// aapt resource value: 0x7f050003
-			public const int mainheader = 2131034115;
+			// aapt resource value: 0x7f05000a
+			public const int gobutton = 2131034122;
 			
 			// aapt resource value: 0x7f050001
-			public const int ratingBar1 = 2131034113;
+			public const int itemCost = 2131034113;
+			
+			// aapt resource value: 0x7f050000
+			public const int item_brief = 2131034112;
+			
+			// aapt resource value: 0x7f050003
+			public const int item_desc = 2131034115;
+			
+			// aapt resource value: 0x7f050005
+			public const int mainheader = 2131034117;
 			
 			// aapt resource value: 0x7f050002
-			public const int savebtn = 2131034114;
+			public const int priority = 2131034114;
+			
+			// aapt resource value: 0x7f050004
+			public const int savebtn = 2131034116;
 			
 			static Id()
 			{

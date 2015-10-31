@@ -6,6 +6,7 @@
     android:paddingRight="16dp"
     android:orientation="vertical">
     <EditText
+        android:id="@+id/item_brief"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/item_name" />
@@ -18,10 +19,11 @@
     <RatingBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ratingBar1"
+        android:id="@+id/priority"
         android:numStars="5"
         android:stepSize="1.0" />
     <EditText
+        android:id="@+id/item_desc"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
