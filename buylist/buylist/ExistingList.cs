@@ -11,6 +11,7 @@ using Android.Views;
 using Android.Widget;
 using System.Threading;
 using Android.Preferences;
+using System.Collections.ObjectModel;
 
 namespace buylist
 {
@@ -21,10 +22,10 @@ namespace buylist
         private List<ShopItem> mItems;
         private ListView mListview;
 
-        protected override void OnCreate(Bundle bundle)
+        private void db_to_list_refresh()
         {
-            base.OnCreate(bundle);
-            SetContentView(Resource.Layout.existinglistview);
+            mItems = new List<ShopItem>();
+            mListview = FindViewById<ListView>(Resource.Id.existinglist);
 
             // create DB path
             var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
@@ -32,26 +33,29 @@ namespace buylist
 
             //create the db helper class
             var dbhelper = new DBHelper(path_to_database);
+            //create or open shopitem database
             var result = dbhelper.create_database();
-
-            mItems = new List<ShopItem>();
-            //it returns a value of the IEnumerable type "selected_table" from selected_table.cs
             var db_list = dbhelper.query_selected_values("select ItemBrief,ItemCost,ItemPriority,ItemDescription from ShopItem");
 
             //if there were no entries then we might hv got a null, in that case, take them to add a new entry
             if (db_list != null)
             {
+                mItems.Clear();
                 foreach (var shopping_item in db_list)
                 {
                     mItems.Add(shopping_item);
                 }
             }
-
-
-            mListview = FindViewById<ListView>(Resource.Id.existinglist);
-
+            //if this was handled in another thread, then the below needs to be run on UI thread
             ListViewAdapter adapter = new ListViewAdapter(this, mItems);
             mListview.Adapter = adapter;
+        }
+        protected override void OnCreate(Bundle bundle)
+        {
+            base.OnCreate(bundle);
+            SetContentView(Resource.Layout.existinglistview);
+
+            db_to_list_refresh();
 
             Button additem = FindViewById<Button>(Resource.Id.additem);
             Button getbudget = FindViewById<Button>(Resource.Id.getbudget);
@@ -65,7 +69,6 @@ namespace buylist
                 dialog_getitem_info input_dialog = new dialog_getitem_info();
                 input_dialog.Show(transaction, "dialog_fragment");
                 input_dialog.mOnShopItemAdded += onSaveShopItemdata;
-
             };
 
             getbudget.Click += delegate
@@ -100,8 +103,8 @@ namespace buylist
             var dbhelper = new DBHelper(path_to_database);
             var result = dbhelper.insert_update_data(item_info);
             var records = dbhelper.get_total_records();
-            Console.WriteLine("DB Update :" + result + " Number of recors : ", records);
-
+            Console.WriteLine("DB Update :" + result + " Number of records : ", records);
+            db_to_list_refresh();
         }
     }
 }

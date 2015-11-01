@@ -10,6 +10,8 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Java.Lang;
+using System.Collections.ObjectModel;
+using Android.Database;
 
 namespace buylist
 {
@@ -17,10 +19,13 @@ namespace buylist
     {
         private List<ShopItem> mItems;
         private Context mContext;
+
+        private List<DataSetObserver> mObservers;
         public ListViewAdapter(Context context, List<ShopItem> items)
         {
             mItems = items;
             mContext = context;
+            mObservers = new List<DataSetObserver>();
         }
         public override int Count
         {
@@ -49,5 +54,20 @@ namespace buylist
             itemcost.Text = mItems[position].ItemCost.ToString();
             return row;
         }
+        /*
+        public override void RegisterDataSetObserver(DataSetObserver observer)
+        {
+            base.RegisterDataSetObserver(observer);
+            mObservers.Add(observer);
+        }
+        public override void NotifyDataSetChanged()
+        {
+            base.NotifyDataSetChanged();
+            foreach( DataSetObserver observer in mObservers )
+            {
+                observer.OnChanged();
+            }
+        }
+        */
     }
 }
