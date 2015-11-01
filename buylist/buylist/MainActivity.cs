@@ -29,14 +29,14 @@ namespace buylist
             }
             else
             {
-                StartActivity(typeof(ExistingList));
+                StartActivity(typeof(ExistingListActivity));
             }
 
             Button gobtn = FindViewById<Button>(Resource.Id.gobutton);
             gobtn.Click += delegate
             {
                 //for now its buylistform, later we need to take them to the existing list
-                StartActivity(typeof(ExistingList));
+                StartActivity(typeof(ExistingListActivity));
             };
         }
     }

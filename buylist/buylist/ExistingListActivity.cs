@@ -15,12 +15,15 @@ using System.Collections.ObjectModel;
 
 namespace buylist
 {
-    [Activity(Label = "ExistingList")]
+    [Activity(Label = "Shopping list options")]
 
-    public class ExistingList : Activity
+    public class ExistingListActivity : Activity
     {
         private List<ShopItem> mItems;
         private ListView mListview;
+        private Button mAddItem;
+        private Button mSaveBudget;
+        private Button mShowBuylist;
 
         private void db_to_list_refresh()
         {
@@ -57,10 +60,11 @@ namespace buylist
 
             db_to_list_refresh();
 
-            Button additem = FindViewById<Button>(Resource.Id.additem);
-            Button getbudget = FindViewById<Button>(Resource.Id.getbudget);
+            mAddItem = FindViewById<Button>(Resource.Id.additem);
+            mSaveBudget = FindViewById<Button>(Resource.Id.getbudget);
+            mShowBuylist = FindViewById<Button>(Resource.Id.whattobuy);
 
-            additem.Click += (object sender, EventArgs e) =>
+            mAddItem.Click += (object sender, EventArgs e) =>
             {
                 //for now its buylistform, later we need to take them to the existing list
                 //StartActivity(typeof(get_iteminfo_dialog));
@@ -71,13 +75,17 @@ namespace buylist
                 input_dialog.mOnShopItemAdded += onSaveShopItemdata;
             };
 
-            getbudget.Click += delegate
+            mSaveBudget.Click += delegate
             {
                 //Pull up input dialog
                 FragmentTransaction transaction = FragmentManager.BeginTransaction();
                 dialog_input_budget budget_input_dialog = new dialog_input_budget();
                 budget_input_dialog.Show(transaction, "dialog_fragment");
                 budget_input_dialog.mOnBudgetAdded += onBudgetValueChanged;
+            };
+            mShowBuylist.Click += delegate
+            {
+                //startactivity->dpfinallistactivity
             };
         }
 

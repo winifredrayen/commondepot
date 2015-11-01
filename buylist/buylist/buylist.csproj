@@ -51,7 +51,8 @@
   <ItemGroup>
     <Compile Include="DBHelper.cs" />
     <Compile Include="dialog_input_budget.cs" />
-    <Compile Include="ExistingList.cs" />
+    <Compile Include="DPfinallistActivity.cs" />
+    <Compile Include="ExistingListActivity.cs" />
     <Compile Include="ListViewAdapter.cs" />
     <Compile Include="selected_table.cs" />
     <Compile Include="ShopItemDB.cs" />
@@ -77,6 +78,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\inputdialogbox.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\dpoutput.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>
