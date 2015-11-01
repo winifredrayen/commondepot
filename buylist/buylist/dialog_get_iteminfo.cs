@@ -49,7 +49,7 @@ namespace buylist
             item_description = _desc;
         }
     }
-    public class get_iteminfo_dialog : DialogFragment
+    public class dialog_getitem_info : DialogFragment
     {
         private EditText mitem_cost;
         private EditText mitem_brief;

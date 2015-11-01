@@ -13,11 +13,11 @@ using Java.Lang;
 
 namespace buylist
 {
-    class ListViewAdapter : BaseAdapter<string>
+    class ListViewAdapter : BaseAdapter<ShopItem>
     {
-        private List<string> mItems;
+        private List<ShopItem> mItems;
         private Context mContext;
-        public ListViewAdapter(Context context, List<string> items)
+        public ListViewAdapter(Context context, List<ShopItem> items)
         {
             mItems = items;
             mContext = context;
@@ -30,7 +30,7 @@ namespace buylist
         {
             return position;
         }
-        public override string this[int position]
+        public override ShopItem this[int position]
         {
             get{ return mItems[position]; }
         }
@@ -44,7 +44,9 @@ namespace buylist
                 row = LayoutInflater.From(mContext).Inflate(Resource.Layout.listview_row, null, false);
             }
             TextView tview = row.FindViewById<TextView>(Resource.Id.textitem);
-            tview.Text = mItems[position];
+            TextView itemcost = row.FindViewById<TextView>(Resource.Id.itemcost);
+            tview.Text = mItems[position].ItemBrief;
+            itemcost.Text = mItems[position].ItemCost.ToString();
             return row;
         }
     }
