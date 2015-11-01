@@ -9,6 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using System.Threading;
 
 namespace buylist
 {
@@ -18,6 +19,7 @@ namespace buylist
     {
         private List<string> mItems;
         private ListView mListview;
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -52,15 +54,51 @@ namespace buylist
             Button additem = FindViewById<Button>(Resource.Id.additem);
             Button getbudget = FindViewById<Button>(Resource.Id.getbudget);
 
-            additem.Click += delegate
+            additem.Click += (object sender, EventArgs e) =>
             {
                 //for now its buylistform, later we need to take them to the existing list
-                StartActivity(typeof(BuyListInputFormActivity));
-            };
-            getbudget.Click += delegate
-            {
+                //StartActivity(typeof(get_iteminfo_dialog));
+                //Pull up input dialog
+                FragmentTransaction transaction = FragmentManager.BeginTransaction();
+                get_iteminfo_dialog input_dialog = new get_iteminfo_dialog();
+                input_dialog.Show(transaction, "dialog_fragment");
+                input_dialog.mOnShopItemAdded += onSaveShopItemdata;
 
             };
+
+            getbudget.Click += delegate
+            {
+                //Pull up input dialog
+                FragmentTransaction transaction = FragmentManager.BeginTransaction();
+                dialog_input_budget budget_input_dialog = new dialog_input_budget();
+                budget_input_dialog.Show(transaction, "dialog_fragment"); 
+            };
+        }
+
+        private void onSaveShopItemdata(object sender, OnShopItemSaveEvtArgs e)
+        {
+            // create DB path
+            var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            var path_to_database = System.IO.Path.Combine(docs_folder, "shoplist.db");
+
+            ShopItem item_info = new ShopItem { ItemBrief = e.item_brief, ItemCost = e.item_Cost,
+                ItemDescription = e.item_description, ItemPriority = e.item_priority };
+
+            //create the db helper class
+            var dbhelper = new DBHelper(path_to_database);
+            var result = dbhelper.create_database();
+
+            if( result != "Database created" )
+            {
+                result = dbhelper.insert_update_data(item_info);
+                var records = dbhelper.get_total_records();
+                Console.WriteLine("DB Update :" + result + " Number of recors : ", records);
+            }
+            else
+            {
+                Toast.MakeText(this, "ERROR:"+result, ToastLength.Long).Show();
+            }
+
         }
     }
 }
