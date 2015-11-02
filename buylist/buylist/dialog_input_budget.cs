@@ -31,6 +31,7 @@ namespace buylist
         public event EventHandler<OnShopItemError> mOnError;
         private Button mSavebtn;
         private EditText mBudgetInput;
+
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView(inflater, container, savedInstanceState);

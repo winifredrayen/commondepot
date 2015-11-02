@@ -38,7 +38,7 @@ namespace buylist
             var dbhelper = new DBHelper(path_to_database);
             //create or open shopitem database
             var result = dbhelper.create_database();
-            var db_list = dbhelper.query_selected_values("select ItemBrief,ItemCost,ItemPriority,ItemDescription from ShopItem");
+            var db_list = dbhelper.query_selected_values("select ID,ItemBrief,ItemCost,ItemPriority,ItemDescription from ShopItem");
 
             //if there were no entries then we might hv got a null, in that case, take them to add a new entry
             if (db_list != null)
@@ -51,8 +51,56 @@ namespace buylist
             }
             //if this was handled in another thread, then the below needs to be run on UI thread
             ListViewAdapter adapter = new ListViewAdapter(this, mItems);
+            adapter.mOnItemCheck += Adapter_mOnItemCheck;
             mListview.Adapter = adapter;
         }
+
+        private void Adapter_mOnItemCheck(object sender, onItemChecked e)
+        {
+            if (!e.checkedvalue)
+                return;
+
+            var builder = new AlertDialog.Builder(this)
+                .SetTitle("Shopping Item Selected")
+                .SetMessage("Do you want to remove this item from the list?")
+                .SetNegativeButton("No", (EventHandler<DialogClickEventArgs>)null)
+                .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null); 
+
+            var dialog = builder.Create();
+            dialog.Show();
+
+            // Get the buttons.
+            var yesBtn = dialog.GetButton((int)DialogButtonType.Positive);
+            var noBtn = dialog.GetButton((int)DialogButtonType.Negative);
+
+            // Assign our handlers.
+            yesBtn.Click += delegate
+            {
+                // Don't dismiss dialog.
+                Console.WriteLine("I am here to stay!");
+                Console.WriteLine("Item about to be deleted : " + e.ID + "is the value checked? " + e.checkedvalue);
+                // create DB path
+                var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+                var path_to_database = System.IO.Path.Combine(docs_folder, "shoplist.db");
+
+                //create the db helper class
+                var dbhelper = new DBHelper(path_to_database);
+                //create or open shopitem database
+                var result = dbhelper.create_database();
+                dbhelper.delete_rows(e.ID);
+                db_to_list_refresh();
+                dialog.Dismiss();
+            };
+            noBtn.Click += delegate
+            {
+                // Dismiss dialog.
+                Console.WriteLine("I will dismiss now!");
+                db_to_list_refresh();
+                dialog.Dismiss();
+            };
+
+        }
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);

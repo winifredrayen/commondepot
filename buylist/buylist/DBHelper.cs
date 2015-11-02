@@ -96,5 +96,18 @@ namespace buylist
                 return -1;
             }
         }
+        public void delete_rows(int ID)
+        {
+            var db = new SQLiteConnection(db_path);
+            var query = db.Table<ShopItem>().Where(item => item.ID == ID);
+
+            if (query != null)
+            {
+                foreach (var obj in query.ToList<ShopItem>()) {
+                    db.Delete<ShopItem>(obj.ID);
+                }
+            }
+            db.Commit();
+        }
     }
 }
