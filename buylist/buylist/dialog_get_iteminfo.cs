@@ -14,6 +14,19 @@ using SQLite;
 
 namespace buylist
 {
+    public class OnShopItemError : EventArgs
+    {
+        private string mErrorMsg;
+        public string error_msg
+        {
+            get { return mErrorMsg;  }
+            set { mErrorMsg = value; }
+        }
+        public OnShopItemError(string _error)
+        {
+            mErrorMsg = _error;
+        }
+    }
     public class OnShopItemSaveEvtArgs : EventArgs
     {
         private string mItem_Brief;
@@ -57,6 +70,7 @@ namespace buylist
         private RatingBar mitem_priority;
 
         public event EventHandler<OnShopItemSaveEvtArgs> mOnShopItemAdded;
+        public event EventHandler<OnShopItemError> mOnError;
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView(inflater, container, savedInstanceState);
@@ -75,16 +89,25 @@ namespace buylist
         void btn_onSaveShopItems(object sender, EventArgs e)
         {
             //evaluation is pending here. 
+            if( mitem_brief.Text.Equals(string.Empty) || 
+                mitem_cost.Text.Equals(string.Empty) ||
+                mitem_priority.Rating.ToString().Equals(string.Empty) )
+            {
+                Console.WriteLine("item description, cost and priority are mandatory");
+                mOnError.Invoke(this, new OnShopItemError("error - item description, cost and priority are mandatory"));
+            }
+            else
+            {
+                //convert the string to double
+                double costvalue = Double.Parse(mitem_cost.Text);
+                double priorityvalue = Double.Parse(mitem_priority.Rating.ToString());
 
-            //convert the string to double
-            double costvalue = Double.Parse(mitem_cost.Text);
-            double priorityvalue = Double.Parse(mitem_priority.Rating.ToString());
+                //make an event and broadcast it. --> mOnShopItemAdded
+                mOnShopItemAdded.Invoke(this, new OnShopItemSaveEvtArgs(mitem_brief.Text, mitem_description.Text,
+                    priorityvalue, costvalue));
 
-            //make an event and broadcast it. --> mOnShopItemAdded
-            mOnShopItemAdded.Invoke(this, new OnShopItemSaveEvtArgs(mitem_brief.Text, mitem_description.Text,
-                priorityvalue, costvalue));
-
-            this.Dismiss();
+                this.Dismiss();
+            }
 
         }
         public override void OnActivityCreated(Bundle savedInstanceState)
@@ -93,22 +116,5 @@ namespace buylist
             base.OnActivityCreated(savedInstanceState);
             Dialog.Window.Attributes.WindowAnimations = Resource.Style.dialog_animation;
         }
-        private bool evaluateInput(string cost, float rating, string brief)
-        {
-            if ( cost.Equals(String.Empty) )
-            {
-                return false;
-            }
-            if( 0 == rating )
-            {
-                return false;
-            }
-            if( brief.Equals(String.Empty))
-            {
-                return false;
-            }
-            return true;
-        }
-
     }
 }

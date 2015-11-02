@@ -73,6 +73,7 @@ namespace buylist
                 dialog_getitem_info input_dialog = new dialog_getitem_info();
                 input_dialog.Show(transaction, "dialog_fragment");
                 input_dialog.mOnShopItemAdded += onSaveShopItemdata;
+                input_dialog.mOnError += OnErrorHandler;
             };
 
             mSaveBudget.Click += delegate
@@ -82,11 +83,18 @@ namespace buylist
                 dialog_input_budget budget_input_dialog = new dialog_input_budget();
                 budget_input_dialog.Show(transaction, "dialog_fragment");
                 budget_input_dialog.mOnBudgetAdded += onBudgetValueChanged;
+                budget_input_dialog.mOnError += OnErrorHandler;
             };
             mShowBuylist.Click += delegate
             {
                 //startactivity->dpfinallistactivity
+                StartActivity(typeof(DPfinallistActivity));
             };
+        }
+
+        private void OnErrorHandler(object sender, OnShopItemError e)
+        {
+            Toast.MakeText(this, e.error_msg, ToastLength.Long).Show();
         }
 
         private void onBudgetValueChanged(object sender, OnBudgetEvtArgs e)
