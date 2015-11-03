@@ -92,7 +92,11 @@ namespace buylist
             };
 
         }
-
+        protected override void OnResume()
+        {
+            base.OnResume();
+            db_to_list_refresh();
+        }
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -112,28 +116,67 @@ namespace buylist
             //quick dialog boxes
             mAddItem.Click += (object sender, EventArgs e) =>
             {
-                //Pull up input dialog
-                FragmentTransaction transaction = FragmentManager.BeginTransaction();
-                dialog_getitem_info input_dialog = new dialog_getitem_info();
-                input_dialog.Show(transaction, "dialog_fragment");
-                input_dialog.mOnShopItemAdded += onSaveShopItemdata;
-                input_dialog.mOnError += OnErrorHandler;
+                showItemInputDlg();
             };
 
             mSaveBudget.Click += delegate
             {
-                //Pull up input dialog
-                FragmentTransaction transaction = FragmentManager.BeginTransaction();
-                dialog_input_budget budget_input_dialog = new dialog_input_budget();
-                budget_input_dialog.Show(transaction, "dialog_fragment");
-                budget_input_dialog.mOnBudgetAdded += onBudgetValueChanged;
-                budget_input_dialog.mOnError += OnErrorHandler;
+                showBudgetDialog();
             };
             mShowBuylist.Click += delegate
             {
-                StartActivity(typeof(DPfinallistActivity));
+                if( 0 != get_budget() )
+                {
+                    StartActivity(typeof(DPfinallistActivity));
+                }
+                else
+                {
+                    var builder = new AlertDialog.Builder(this)
+                                   .SetTitle("Sorry")
+                                   .SetMessage("You need to set the monthly shopping-budget first!")
+                                   .SetPositiveButton("Ok", (EventHandler<DialogClickEventArgs>)null);
+
+                    var dialog = builder.Create();
+                    dialog.Show();
+
+                    // Get the buttons.
+                    var yesBtn = dialog.GetButton((int)DialogButtonType.Positive);
+                    yesBtn.Click += delegate
+                    {
+                        dialog.Dismiss();
+                    };
+                }
             };
         }
+
+        private float get_budget()
+        {
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            float budget_set = prefs.GetFloat("monthly_shopping_budget", 0);
+            return budget_set;
+        }
+        private void showItemInputDlg()
+        {
+            //Pull up input dialog
+            FragmentTransaction transaction = FragmentManager.BeginTransaction();
+            dialog_getitem_info input_dialog = new dialog_getitem_info();
+            input_dialog.Show(transaction, "dialog_fragment");
+            input_dialog.mOnShopItemAdded += onSaveShopItemdata;
+            input_dialog.mOnError += OnErrorHandler;
+        }
+
+        private void showBudgetDialog()
+        {
+            
+            //Pull up input dialog
+            FragmentTransaction transaction = FragmentManager.BeginTransaction();
+            dialog_input_budget budget_input_dialog = new dialog_input_budget();
+            budget_input_dialog.budget = get_budget();
+            budget_input_dialog.Show(transaction, "dialog_fragment");
+            budget_input_dialog.mOnBudgetAdded += onBudgetValueChanged;
+            budget_input_dialog.mOnError += OnErrorHandler;
+        }
+
         //------------------------------------------------------------------------//
         //DB relocation and directory creation
         private void relocate_database()
@@ -152,7 +195,8 @@ namespace buylist
             }
             catch (Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Short).Show();
+                //Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+                Console.WriteLine("ERROR: " + ex.Message);
             }
         }
         //------------------------------------------------------------------------//
@@ -175,7 +219,8 @@ namespace buylist
             }
             catch (Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Short).Show();
+                //Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+                Console.WriteLine("ERROR: " + ex.Message);
             }
         }
         //------------------------------------------------------------------------//
@@ -202,7 +247,8 @@ namespace buylist
             }
             catch (System.Exception ex)
             {
-                Toast.MakeText(this, ex.ToString(), ToastLength.Long).Show();
+                //Toast.MakeText(this, ex.ToString(), ToastLength.Long).Show();
+                Console.WriteLine("ERROR: " + ex.Message);
             }
         }
         //one time task - db relocation check

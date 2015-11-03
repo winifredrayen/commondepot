@@ -4,14 +4,15 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <TextView
-        android:text="Enter your monthly shopping budget"
+        android:text="What is your monthly shopping budget?"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
-        android:layout_height="40.4dp"
+        android:layout_height="wrap_content"
         android:id="@+id/textView1"
         android:paddingTop="5dp"
         android:paddingLeft="5dp"
-        android:paddingBottom="2dp" />
+        android:paddingBottom="2dp"
+        android:gravity="center" />
     <EditText
         android:inputType="numberDecimal"
         android:layout_width="match_parent"

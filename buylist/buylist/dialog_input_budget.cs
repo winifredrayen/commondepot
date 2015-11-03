@@ -32,6 +32,13 @@ namespace buylist
         private Button mSavebtn;
         private EditText mBudgetInput;
 
+        private float m_existingbudget;
+        public float budget
+        {
+            get { return m_existingbudget; }
+            set { m_existingbudget = value; }
+        }
+
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView(inflater, container, savedInstanceState);
@@ -39,6 +46,8 @@ namespace buylist
 
             mSavebtn = view.FindViewById<Button>(Resource.Id.savebudget);
             mBudgetInput = view.FindViewById<EditText>(Resource.Id.budgetvalue);
+
+            mBudgetInput.Text = m_existingbudget.ToString();
 
             mSavebtn.Click += onSaveButtonClicked;
             return view;

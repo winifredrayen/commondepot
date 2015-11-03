@@ -9,8 +9,8 @@
     and we\'ll help you get the items at the right time !</string>
     <string name="gobtn">Go</string>
     <string name="save">Save</string>
-    <string name="item_name">One line description for the item</string>
-    <string name="item_cost">Approx. cost </string>
-    <string name="description">You can add the details of the item for future reference (optional)</string>
-    <string name="help">These are the hand picked items evaluated based on their cost and priority, they perfectly fit into your month\'s budget.</string>
+    <string name="item_name">Brief Description</string>
+    <string name="item_cost">Cost</string>
+    <string name="description">Notes (optional)</string>
+    <string name="help">Based on your input, these items fit : </string>
 </resources>

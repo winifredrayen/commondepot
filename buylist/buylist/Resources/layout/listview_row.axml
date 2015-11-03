@@ -3,7 +3,8 @@
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:weightSum="100">
+    android:weightSum="100"
+    android:minHeight="25dp">
     <TextView
         android:text="Item Name"
         android:layout_width="match_parent"
@@ -11,8 +12,8 @@
         android:layout_weight="50"
         android:id="@+id/textitem"
         android:paddingBottom="10dp"
-        android:paddingLeft="5dp"
-        android:paddingTop="10dp" />
+        android:paddingTop="10dp"
+        android:layout_marginLeft="10dp" />
     <TextView
         android:text="Item Cost"
         android:layout_width="match_parent"

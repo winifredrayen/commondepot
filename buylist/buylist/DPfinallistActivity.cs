@@ -13,7 +13,7 @@ using Android.Preferences;
 
 namespace buylist
 {
-    [Activity(Label = "Happy shopping !")]
+    [Activity(Label = "Happy shopping!")]
     public class DPfinallistActivity : Activity
     {
         private ListView mListview;
@@ -66,8 +66,9 @@ namespace buylist
                 var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath);
                 //create or open shopitem database
                 var result = dbhelper.create_database();
-                dbhelper.delete_rows(e.ID);
+                double cost = dbhelper.delete_rows(e.ID);
                 refreshUI();
+                reduce_budget((int)cost);
                 dialog.Dismiss();
             };
             noBtn.Click += delegate
@@ -96,12 +97,13 @@ namespace buylist
             editor.PutFloat("monthly_shopping_budget", existingvalue);
             // editor.Commit();    // applies changes synchronously on older APIs
             editor.Apply();        // applies changes asynchronously on newer APIs
+            Toast.MakeText(this, "Your shopping budget is adjusted based on this purchase, re-adjust when needed", ToastLength.Long).Show();
         }
 
         private float get_monthly_budget()
         {
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
-            float given_budget = prefs.GetFloat("monthly_shopping_budget", 30);
+            float given_budget = prefs.GetFloat("monthly_shopping_budget", 0);
             return given_budget;
         }
         private List<ShopItem> get_all_shopitems()

@@ -17,10 +17,13 @@
         android:id="@+id/item_cost"
         android:hint="@string/item_cost" />
     <RatingBar
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:id="@+id/item_priority"
         android:numStars="5"
+        android:rating="2"
+        android:gravity="center"
         android:stepSize="1.0" />
     <EditText
         android:id="@+id/item_desc"
