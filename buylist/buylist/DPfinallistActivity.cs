@@ -47,8 +47,8 @@ namespace buylist
                 return;
 
             var builder = new AlertDialog.Builder(this)
-                .SetTitle("Shopping Item Selected")
-                .SetMessage("Do you want to remove this item from the list?")
+                .SetTitle("Shopping Complete")
+                .SetMessage("Have you purchased this item already??")
                 .SetNegativeButton("No", (EventHandler<DialogClickEventArgs>)null)
                 .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null);
 
@@ -62,15 +62,8 @@ namespace buylist
             // Assign our handlers.
             yesBtn.Click += delegate
             {
-                // Don't dismiss dialog.
-                Console.WriteLine("I am here to stay!");
-                Console.WriteLine("Item about to be deleted : " + e.ID + "is the value checked? " + e.checkedvalue);
-                // create DB path
-                var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-                var path_to_database = System.IO.Path.Combine(docs_folder, "shoplist.db");
-
                 //create the db helper class
-                var dbhelper = new DBHelper(path_to_database);
+                var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath);
                 //create or open shopitem database
                 var result = dbhelper.create_database();
                 dbhelper.delete_rows(e.ID);
@@ -86,6 +79,25 @@ namespace buylist
             };
 
         }
+
+        private void reduce_budget(int cost)
+        {
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            ISharedPreferencesEditor editor = prefs.Edit();
+            float existingvalue = prefs.GetFloat("monthly_shopping_budget", 0);
+            if( (existingvalue - cost) > 0.0 )
+            {
+                existingvalue -= cost;
+            }
+            else
+            {
+                existingvalue = 0;
+            }
+            editor.PutFloat("monthly_shopping_budget", existingvalue);
+            // editor.Commit();    // applies changes synchronously on older APIs
+            editor.Apply();        // applies changes asynchronously on newer APIs
+        }
+
         private float get_monthly_budget()
         {
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
@@ -96,15 +108,11 @@ namespace buylist
         {
             List<ShopItem> shop_items = new List<ShopItem>();
 
-            // create DB path
-            var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-            var path_to_database = System.IO.Path.Combine(docs_folder, "shoplist.db");
-
             //create the db helper class
-            var dbhelper = new DBHelper(path_to_database);
+            var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath);
             //create or open shopitem database
             var result = dbhelper.create_database();
-            var db_list = dbhelper.query_selected_values("select ID,ItemBrief,ItemCost,ItemPriority,ItemDescription from ShopItem");
+            var db_list = dbhelper.query_selected_values("select * from ShopItem");
 
             //if there were no entries then we might hv got a null, in that case, take them to add a new entry
             if (db_list != null)

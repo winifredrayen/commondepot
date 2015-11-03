@@ -11,9 +11,17 @@ using Android.Views;
 using Android.Widget;
 
 using SQLite;
+using System.IO;
 
 namespace buylist
 {
+    public class AppGlobal
+    {
+        public static string DatabaseFileName = "shoplist.db";
+        public static string ExternalAppFolder = Android.OS.Environment.ExternalStorageDirectory+"/buylist";
+        public static string ExternalAppDBFolder = ExternalAppFolder +"/WorkingDB";
+        public static string DatabasebFilePath = System.IO.Path.Combine(AppGlobal.ExternalAppDBFolder, AppGlobal.DatabaseFileName);
+    }
     class DBHelper
     {
         public string db_path { get; set; }

@@ -18,11 +18,17 @@ namespace buylist
     public class onItemChecked : EventArgs
     {
         private int m_ID;
+        private int m_cost;
         private bool m_checked;
         public int ID
         {
             get { return m_ID; }
             set { m_ID = value; }
+        }
+        public int Cost
+        {
+            get { return m_cost; }
+            set { m_cost = value; }
         }
         public bool checkedvalue
         {

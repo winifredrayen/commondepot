@@ -12,9 +12,11 @@ using Android.Widget;
 using System.Threading;
 using Android.Preferences;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace buylist
 {
+
     [Activity(Label = "Shopping list options")]
 
     public class ExistingListActivity : Activity
@@ -30,15 +32,11 @@ namespace buylist
             mItems = new List<ShopItem>();
             mListview = FindViewById<ListView>(Resource.Id.existinglist);
 
-            // create DB path
-            var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-            var path_to_database = System.IO.Path.Combine(docs_folder, "shoplist.db");
-
             //create the db helper class
-            var dbhelper = new DBHelper(path_to_database);
+            var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath);
             //create or open shopitem database
             var result = dbhelper.create_database();
-            var db_list = dbhelper.query_selected_values("select ID,ItemBrief,ItemCost,ItemPriority,ItemDescription from ShopItem");
+            var db_list = dbhelper.query_selected_values("select * from ShopItem");
 
             //if there were no entries then we might hv got a null, in that case, take them to add a new entry
             if (db_list != null)
@@ -61,7 +59,7 @@ namespace buylist
                 return;
 
             var builder = new AlertDialog.Builder(this)
-                .SetTitle("Shopping Item Selected")
+                .SetTitle("You have selected this queued item !")
                 .SetMessage("Do you want to remove this item from the list?")
                 .SetNegativeButton("No", (EventHandler<DialogClickEventArgs>)null)
                 .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null); 
@@ -76,15 +74,9 @@ namespace buylist
             // Assign our handlers.
             yesBtn.Click += delegate
             {
-                // Don't dismiss dialog.
-                Console.WriteLine("I am here to stay!");
                 Console.WriteLine("Item about to be deleted : " + e.ID + "is the value checked? " + e.checkedvalue);
-                // create DB path
-                var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-                var path_to_database = System.IO.Path.Combine(docs_folder, "shoplist.db");
-
                 //create the db helper class
-                var dbhelper = new DBHelper(path_to_database);
+                var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath);
                 //create or open shopitem database
                 var result = dbhelper.create_database();
                 dbhelper.delete_rows(e.ID);
@@ -106,16 +98,20 @@ namespace buylist
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.existinglistview);
 
+            if ( !get_database_relocation() )
+            {
+                relocate_database();
+                set_database_relocation();
+            }
             db_to_list_refresh();
 
             mAddItem = FindViewById<Button>(Resource.Id.additem);
             mSaveBudget = FindViewById<Button>(Resource.Id.getbudget);
             mShowBuylist = FindViewById<Button>(Resource.Id.whattobuy);
 
+            //quick dialog boxes
             mAddItem.Click += (object sender, EventArgs e) =>
             {
-                //for now its buylistform, later we need to take them to the existing list
-                //StartActivity(typeof(get_iteminfo_dialog));
                 //Pull up input dialog
                 FragmentTransaction transaction = FragmentManager.BeginTransaction();
                 dialog_getitem_info input_dialog = new dialog_getitem_info();
@@ -135,16 +131,97 @@ namespace buylist
             };
             mShowBuylist.Click += delegate
             {
-                //startactivity->dpfinallistactivity
                 StartActivity(typeof(DPfinallistActivity));
             };
         }
-
-        private void OnErrorHandler(object sender, OnShopItemError e)
+        //------------------------------------------------------------------------//
+        //DB relocation and directory creation
+        private void relocate_database()
         {
-            Toast.MakeText(this, e.error_msg, ToastLength.Long).Show();
-        }
+            try
+            {
+                // function call used fro creating a working directory
+                create_directory();
 
+                // checking is there a directory available in the same external storage, if not create one
+                if (!File.Exists(AppGlobal.DatabasebFilePath))
+                {
+                    // creating Database folder and file
+                    creatingworking_dbfolder();
+                }
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(this, ex.Message, ToastLength.Short).Show();
+            }
+        }
+        //------------------------------------------------------------------------//
+        public void create_directory()
+        {
+            bool isExists = false;
+            try
+            {
+                // checking folder available or not
+                isExists = System.IO.Directory.Exists(AppGlobal.ExternalAppFolder);
+
+                // if not create the folder
+                if (!isExists)
+                    System.IO.Directory.CreateDirectory(AppGlobal.ExternalAppFolder);
+
+                isExists = System.IO.Directory.Exists(AppGlobal.ExternalAppDBFolder);
+
+                if (!isExists)
+                    System.IO.Directory.CreateDirectory(AppGlobal.ExternalAppDBFolder);
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(this, ex.Message, ToastLength.Short).Show();
+            }
+        }
+        //------------------------------------------------------------------------//
+        public void creatingworking_dbfolder()
+        {
+            try
+            {
+                //checking file exist in location or not
+                if (!File.Exists(AppGlobal.DatabasebFilePath))
+                {
+                    {
+                        // create DB path
+                        var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+                        var path_to_olddatabase = System.IO.Path.Combine(docs_folder, "shoplist.db");
+
+                        using (var asset = File.Open(path_to_olddatabase,FileMode.Open))
+                        using (var dest = File.Create(AppGlobal.DatabasebFilePath))
+                        {
+                            // copying database from applicationdata folder to external storage device
+                            asset.CopyTo(dest);
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Toast.MakeText(this, ex.ToString(), ToastLength.Long).Show();
+            }
+        }
+        //one time task - db relocation check
+        private bool get_database_relocation()
+        {
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            bool retvalue = prefs.GetBoolean("database_relocated", false);
+            return retvalue;
+        }
+        private void set_database_relocation()
+        {
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            ISharedPreferencesEditor editor = prefs.Edit();
+            editor.PutBoolean("database_relocated", true);
+            // editor.Commit();    // applies changes synchronously on older APIs
+            editor.Apply();        // applies changes asynchronously on newer APIs
+        }
+        //------------------------------------------------------------------------//
+        //Event Handlers
         private void onBudgetValueChanged(object sender, OnBudgetEvtArgs e)
         {
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(this);
@@ -156,19 +233,21 @@ namespace buylist
 
         private void onSaveShopItemdata(object sender, OnShopItemSaveEvtArgs e)
         {
-            // create DB path
-            var docs_folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-            var path_to_database = System.IO.Path.Combine(docs_folder, "shoplist.db");
-
             ShopItem item_info = new ShopItem { ItemBrief = e.item_brief, ItemCost = e.item_Cost,
                 ItemDescription = e.item_description, ItemPriority = e.item_priority };
 
             //create the db helper class
-            var dbhelper = new DBHelper(path_to_database);
+            var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath);
             var result = dbhelper.insert_update_data(item_info);
             var records = dbhelper.get_total_records();
             Console.WriteLine("DB Update :" + result + " Number of records : ", records);
             db_to_list_refresh();
         }
+        //------------------------------------------------------------------------//
+        private void OnErrorHandler(object sender, OnShopItemError e)
+        {
+            Toast.MakeText(this, e.error_msg, ToastLength.Long).Show();
+        }
+        //------------------------------------------------------------------------//
     }
 }
