@@ -63,7 +63,7 @@ namespace buylist
             yesBtn.Click += delegate
             {
                 //create the db helper class
-                var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath);
+                var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath,this);
                 //create or open shopitem database
                 var result = dbhelper.create_database();
                 double cost = dbhelper.delete_rows(e.ID);
@@ -111,7 +111,7 @@ namespace buylist
             List<ShopItem> shop_items = new List<ShopItem>();
 
             //create the db helper class
-            var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath);
+            var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath,this);
             //create or open shopitem database
             var result = dbhelper.create_database();
             var db_list = dbhelper.query_selected_values("select * from ShopItem");

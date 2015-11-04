@@ -12,6 +12,7 @@ using Android.Widget;
 
 using SQLite;
 using System.IO;
+using Android.Preferences;
 
 namespace buylist
 {
@@ -25,21 +26,30 @@ namespace buylist
     class DBHelper
     {
         public string db_path { get; set; }
+        public Context mContext { get; set; }
 
-        public DBHelper(string path)
+        public DBHelper(string path,Context context)
         {
             db_path = path;
+            mContext = context;
         }
         public string create_database()
         {
             try
             {
-                var connection = new SQLiteConnection(db_path);
-                connection.CreateTable<ShopItem>();
+                if (!is_databasefolder_setup())
+                {
+                    setup_database_folder();
+                    set_databasefolder_complete();
+
+                    var connection = new SQLiteConnection(db_path);
+                    connection.CreateTable<ShopItem>();
+                }
                 return "Database created";
             }
             catch (SQLiteException ex)
             {
+                Console.WriteLine("exception handled while creating database:{0}", ex.Message);
                 return ex.Message;
             }
         }
@@ -55,6 +65,7 @@ namespace buylist
             }
             catch (SQLiteException ex)
             {
+                Console.WriteLine("exception handled while inserting data:{0}", ex.Message);
                 return ex.Message;
             }
         }
@@ -70,6 +81,7 @@ namespace buylist
             }
             catch (SQLiteException ex)
             {
+                Console.WriteLine("exception handled while inserting data:{0}", ex.Message);
                 return ex.Message;
             }
         }
@@ -82,7 +94,7 @@ namespace buylist
             }
             catch (SQLiteException ex)
             {
-                Console.WriteLine("exception handled", ex.Message);
+                Console.WriteLine("exception handled while querying:{0}", ex.Message);
             }
             return null;
         }
@@ -99,25 +111,120 @@ namespace buylist
 
                 return count;
             }
-            catch (SQLiteException)
+            catch (SQLiteException ex)
             {
+                Console.WriteLine("get total records has failed, ex.msg :{0}",ex.Message);
                 return -1;
             }
         }
         public double delete_rows(int ID)
         {
-            var db = new SQLiteConnection(db_path);
-            var query = db.Table<ShopItem>().Where(item => item.ID == ID);
             double cost = 0;
-            if (query != null)
+            try
             {
-                foreach (var obj in query.ToList<ShopItem>()) {
-                    cost = obj.ItemCost;
-                    db.Delete<ShopItem>(obj.ID);
+                var db = new SQLiteConnection(db_path);
+                var query = db.Table<ShopItem>().Where(item => item.ID == ID);
+                if (query != null)
+                {
+                    foreach (var obj in query.ToList<ShopItem>())
+                    {
+                        cost = obj.ItemCost;
+                        db.Delete<ShopItem>(obj.ID);
+                    }
                 }
+                db.Commit();
             }
-            db.Commit();
+            catch (SQLiteException ex)
+            {
+                Console.WriteLine("deleting row has failed, invalid parameters ID: {0} ex.msg :{1}", ID,ex.Message);
+                return -1;
+            }
             return cost;
         }
+
+        //------------------------------------------------------------------------//
+        //DB relocation and directory creation
+        private void setup_database_folder()
+        {
+            try
+            {
+                // function call used fro creating a working directory
+                create_directory();
+
+                // checking is there a directory available in the same external storage, if not create one
+                if (!File.Exists(AppGlobal.DatabasebFilePath))
+                {
+                    // creating Database folder and file
+                    create_workind_dbfile();
+                }
+            }
+            catch (Exception ex)
+            {
+                //Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+        }
+        //------------------------------------------------------------------------//
+        public void create_directory()
+        {
+            bool isExists = false;
+            try
+            {
+                // checking folder available or not
+                isExists = System.IO.Directory.Exists(AppGlobal.ExternalAppFolder);
+
+                // if not create the folder
+                if (!isExists)
+                    System.IO.Directory.CreateDirectory(AppGlobal.ExternalAppFolder);
+
+                isExists = System.IO.Directory.Exists(AppGlobal.ExternalAppDBFolder);
+
+                if (!isExists)
+                    System.IO.Directory.CreateDirectory(AppGlobal.ExternalAppDBFolder);
+            }
+            catch (Exception ex)
+            {
+                //Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+        }
+        //------------------------------------------------------------------------//
+        public void create_workind_dbfile()
+        {
+            try
+            {
+                //checking file exist in location or not
+                if (!File.Exists(AppGlobal.DatabasebFilePath))
+                {
+                    {
+                        using (var dest = File.Create(AppGlobal.DatabasebFilePath))
+                        {
+                            Console.WriteLine("Created the database filed:{0}", AppGlobal.DatabasebFilePath);
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                //Toast.MakeText(this, ex.ToString(), ToastLength.Long).Show();
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+        }
+        //one time task - db relocation check
+        private bool is_databasefolder_setup()
+        {
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(mContext);
+            bool retvalue = prefs.GetBoolean("database_relocated", false);
+            return retvalue;
+        }
+        private void set_databasefolder_complete()
+        {
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(mContext);
+            ISharedPreferencesEditor editor = prefs.Edit();
+            editor.PutBoolean("database_relocated", true);
+            // editor.Commit();    // applies changes synchronously on older APIs
+            editor.Apply();        // applies changes asynchronously on newer APIs
+        }
+        //------------------------------------------------------------------------//
     }
 }
