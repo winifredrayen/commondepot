@@ -29,7 +29,7 @@ using Android.App;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 #if DEBUG
-[assembly: Application(Debuggable=true,Icon = "@drawable/icon"))]
+[assembly: Application(Debuggable=true,Icon = "@drawable/icon")]
 #else
 [assembly: Application(Debuggable = false, Icon = "@drawable/icon")]
 #endif
