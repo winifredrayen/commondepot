@@ -26,8 +26,10 @@ namespace buylist
         private Button mAddItem;
         private Button mSaveBudget;
         private Button mShowBuylist;
+        ListViewAdapter m_adapter;
+        private ObservableCollection<ShopItem> mItemList = new ObservableCollection<ShopItem>();
 
-         protected override void OnResume()
+        protected override void OnResume()
         {
             base.OnResume();
             //inorder to refresh the list if you move back & forth this activity
@@ -39,9 +41,12 @@ namespace buylist
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.existinglistview);
 
+            m_adapter = new ListViewAdapter(this, mItemList);
             mListview = FindViewById<ListView>(Resource.Id.existinglist);
-            mListview.ItemClick += MListview_ItemClick;
-
+            m_adapter.mOnItemCheck += OnCheckItemClick;
+            mListview.Adapter = m_adapter;
+            mListview.ItemClick += OnListViewItemClick;
+            
             dbupdateUI();
 
             mAddItem = FindViewById<Button>(Resource.Id.additem);
@@ -167,7 +172,7 @@ namespace buylist
             Toast.MakeText(this, e.error_msg, ToastLength.Long).Show();
         }
         //------------------------------------------------------------------------//
-        private void Adapter_mOnItemCheck(object sender, onItemChecked e)
+        private void OnCheckItemClick(object sender, onItemChecked e)
         {
             if (!e.checkedvalue)
                 return;
@@ -209,13 +214,15 @@ namespace buylist
                 dbupdateUI();
                 dialog.Dismiss();
             };
-
         }
         //------------------------------------------------------------------------//
         //UI operation: we need to find a neat way, as to do this operation async and tie this with UI thread later on
         private void dbupdateUI()
         {
             mItems = new List<ShopItem>();
+
+            if( null == mListview )
+                mItemList = new ObservableCollection<ShopItem>();
 
             //create the db helper class
             var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath, this);
@@ -233,18 +240,17 @@ namespace buylist
             if (db_list != null)
             {
                 mItems.Clear();
+                mItemList.Clear();
                 foreach (var shopping_item in db_list)
                 {
                     mItems.Add(shopping_item);
+                    mItemList.Add(shopping_item);
                 }
             }
-            //if this was handled in another thread, then the below needs to be run on UI thread
-            ListViewAdapter adapter = new ListViewAdapter(this, mItems);
-            adapter.mOnItemCheck += Adapter_mOnItemCheck;
-            mListview.Adapter = adapter;
+            m_adapter.NotifyDataSetChanged();
         }
 
-        private void MListview_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        private void OnListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             Console.WriteLine("Item clicked priority:{0}", mItems[e.Position].ItemPriority);
             showItemInputDlg(mItems[e.Position]);

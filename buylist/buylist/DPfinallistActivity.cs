@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.Preferences;
+using System.Collections.ObjectModel;
 
 namespace buylist
 {
@@ -17,7 +18,8 @@ namespace buylist
     public class DPfinallistActivity : Activity
     {
         private ListView mListview;
-        private List<ShopItem> sortedlist;
+        private ObservableCollection<ShopItem> m_sortedlist = new ObservableCollection<ShopItem>();
+        ListViewAdapter m_adapter;
 
         private void refreshUI()
         {
@@ -25,12 +27,8 @@ namespace buylist
             List<ShopItem> all_items = get_all_shopitems();
             float budget = get_monthly_budget();
 
-            sortedlist = sortandplace(all_items, budget);
-
-            ListViewAdapter adapter = new ListViewAdapter(this, sortedlist);
-            adapter.mOnItemCheck += Adapter_mOnItemCheck;
-            mListview.Adapter = adapter;
-
+            m_sortedlist = sortandplace(all_items, budget);
+            m_adapter.NotifyDataSetChanged();
         }
         protected override void OnCreate(Bundle bundle)
         {
@@ -38,10 +36,14 @@ namespace buylist
             SetContentView(Resource.Layout.dpoutput);
 
             mListview = FindViewById<ListView>(Resource.Id.finallist);
+            m_adapter = new ListViewAdapter(this, m_sortedlist);
+            m_adapter.mOnItemCheck += onItemCheck;
+            mListview.Adapter = m_adapter;
+
             refreshUI();
         }
 
-        private void Adapter_mOnItemCheck(object sender, onItemChecked e)
+        private void onItemCheck(object sender, onItemChecked e)
         {
             if (!e.checkedvalue)
                 return;
@@ -127,9 +129,9 @@ namespace buylist
             }
             return shop_items;
         }
-        private List<ShopItem> sortandplace(List<ShopItem> _item, float B)
+        private ObservableCollection<ShopItem> sortandplace(List<ShopItem> _item, float B)
         {
-            List<ShopItem> toshowlist = new List<ShopItem>();
+            ObservableCollection<ShopItem> toshowlist = new ObservableCollection<ShopItem>();
             //total capacity = B
             //cost : _item.cost & priority: _item.priority
             int total_budgets = (int)B;

@@ -43,20 +43,21 @@ namespace buylist
     }
     class ListViewAdapter : BaseAdapter<ShopItem>
     {
-        private List<ShopItem> mItems;
+        private ObservableCollection<ShopItem> mItemList = new ObservableCollection<ShopItem>();
         private Context mContext;
 
         private List<DataSetObserver> mObservers;
         public event EventHandler<onItemChecked> mOnItemCheck;
-        public ListViewAdapter(Context context, List<ShopItem> items)
+
+        public ListViewAdapter(Context context, ObservableCollection<ShopItem> items)
         {
-            mItems = items;
             mContext = context;
+            mItemList = items;
             mObservers = new List<DataSetObserver>();
         }
         public override int Count
         {
-            get{ return mItems.Count; }
+            get { return mItemList.Count; }
         }
         public override long GetItemId(int position)
         {
@@ -64,7 +65,7 @@ namespace buylist
         }
         public override ShopItem this[int position]
         {
-            get{ return mItems[position]; }
+            get{ return mItemList[position]; }
         }
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
@@ -79,32 +80,39 @@ namespace buylist
             TextView itemcost = row.FindViewById<TextView>(Resource.Id.itemcost);
             CheckBox chckbox = row.FindViewById<CheckBox>(Resource.Id.itemcheck);
 
-            tview.Text = mItems[position].ItemBrief;
-            itemcost.Text = mItems[position].ItemCost.ToString();
+            tview.Text = mItemList[position].ItemBrief;
+            itemcost.Text = mItemList[position].ItemCost.ToString();
 
-            chckbox.Tag = mItems[position].ID.ToString();
-            chckbox.CheckedChange += (sender, e) =>
-            {
-                Console.WriteLine("Checked/Unchecked!!"+ Int32.Parse(chckbox.Tag.ToString()));
-                mOnItemCheck.Invoke(this, new onItemChecked(Int32.Parse(chckbox.Tag.ToString()),e.IsChecked));
-            };
+            chckbox.Tag = mItemList[position].ID.ToString();
+
+            //fix for accumulating event handlers for every getview 
+            chckbox.CheckedChange -= onCheckItem;
+            chckbox.CheckedChange += onCheckItem;
+
             return row;
         }
 
-        /*
-public override void RegisterDataSetObserver(DataSetObserver observer)
-{
-   base.RegisterDataSetObserver(observer);
-   mObservers.Add(observer);
-}
-public override void NotifyDataSetChanged()
-{
-   base.NotifyDataSetChanged();
-   foreach( DataSetObserver observer in mObservers )
-   {
-       observer.OnChanged();
-   }
-}
-*/
+        private void onCheckItem(object sender, CompoundButton.CheckedChangeEventArgs e)
+        {
+            CheckBox cbox = (CheckBox)sender;
+            Console.WriteLine("Checked/Unchecked!!" + Int32.Parse(cbox.Tag.ToString()));
+            mOnItemCheck.Invoke(this, new onItemChecked(Int32.Parse(cbox.Tag.ToString()), e.IsChecked));
+            cbox.Checked = false;
+        }
+
+        public override void RegisterDataSetObserver(DataSetObserver observer)
+        {
+           base.RegisterDataSetObserver(observer);
+           mObservers.Add(observer);
+        }
+        public override void NotifyDataSetChanged()
+        {
+           base.NotifyDataSetChanged();
+           foreach( DataSetObserver observer in mObservers )
+           {
+               observer.OnChanged();
+           }
+        }
+
     }
 }
