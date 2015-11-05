@@ -31,7 +31,7 @@ namespace buylist
         {
             base.OnResume();
             //inorder to refresh the list if you move back & forth this activity
-            db_to_list_refresh();
+            dbupdateUI();
         }
         //------------------------------------------------------------------------//
         protected override void OnCreate(Bundle bundle)
@@ -42,7 +42,7 @@ namespace buylist
             mListview = FindViewById<ListView>(Resource.Id.existinglist);
             mListview.ItemClick += MListview_ItemClick;
 
-            db_to_list_refresh();
+            dbupdateUI();
 
             mAddItem = FindViewById<Button>(Resource.Id.additem);
             mSaveBudget = FindViewById<Button>(Resource.Id.getbudget);
@@ -130,10 +130,10 @@ namespace buylist
 
         private void onSaveShopItemdata(object sender, OnShopItemSaveEvtArgs e)
         {
-            string result;
+            bool result;
 
             //create the db helper class
-            var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath,this);
+            var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath,this);
             if( e.updatetable ) {
                 ShopItem item_info = new ShopItem
                 {
@@ -159,7 +159,7 @@ namespace buylist
             
             var records = dbhelper.get_total_records();
             Console.WriteLine("DB Update :" + result + " Number of records : ", records);
-            db_to_list_refresh();
+            dbupdateUI();
         }
         //------------------------------------------------------------------------//
         private void OnErrorHandler(object sender, OnShopItemError e)
@@ -190,32 +190,43 @@ namespace buylist
             {
                 Console.WriteLine("Item about to be deleted : " + e.ID + "is the value checked? " + e.checkedvalue);
                 //create the db helper class
-                var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath, this);
+                var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath, this);
                 //create or open shopitem database
                 var result = dbhelper.create_database();
+                if (!result)
+                {
+                    Toast.MakeText(this, "Failed to open / create the database ", ToastLength.Long).Show();
+                    return;
+                }
                 dbhelper.delete_rows(e.ID);
-                db_to_list_refresh();
+                dbupdateUI();
                 dialog.Dismiss();
             };
             noBtn.Click += delegate
             {
                 // Dismiss dialog.
                 Console.WriteLine("I will dismiss now!");
-                db_to_list_refresh();
+                dbupdateUI();
                 dialog.Dismiss();
             };
 
         }
         //------------------------------------------------------------------------//
         //UI operation: we need to find a neat way, as to do this operation async and tie this with UI thread later on
-        private void db_to_list_refresh()
+        private void dbupdateUI()
         {
             mItems = new List<ShopItem>();
 
             //create the db helper class
-            var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath, this);
+            var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath, this);
             //create or open shopitem database
             var result = dbhelper.create_database();
+            if (!result)
+            {
+                Toast.MakeText(this, "Failed to open / create the database ", ToastLength.Long).Show();
+                return;
+            }
+
             var db_list = dbhelper.query_selected_values("select * from ShopItem");
 
             //if there were no entries then we might hv got a null, in that case, take them to add a new entry

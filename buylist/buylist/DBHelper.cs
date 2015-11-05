@@ -16,24 +16,29 @@ using Android.Preferences;
 
 namespace buylist
 {
-    public class AppGlobal
+    public class DBGlobal
     {
         public static string DatabaseFileName = "shoplist.db";
         public static string ExternalAppFolder = Android.OS.Environment.ExternalStorageDirectory+"/buylist";
         public static string ExternalAppDBFolder = ExternalAppFolder +"/WorkingDB";
-        public static string DatabasebFilePath = System.IO.Path.Combine(AppGlobal.ExternalAppDBFolder, AppGlobal.DatabaseFileName);
+        public static string DatabasebFilePath = System.IO.Path.Combine(DBGlobal.ExternalAppDBFolder, DBGlobal.DatabaseFileName);
     }
     class DBHelper
     {
-        public string db_path { get; set; }
-        public Context mContext { get; set; }
+        public string m_db_path { get; set; }
+        public Context m_context { get; set; }
 
+        //------------------------------------------------------------------------//
+        //c'tor - context is needed to access shared preferences
         public DBHelper(string path,Context context)
         {
-            db_path = path;
-            mContext = context;
+            m_db_path = path;
+            m_context = context;
         }
-        public string create_database()
+        //------------------------------------------------------------------------//
+        //base function where we create the target db residing folder structure and 
+        //where we create the db file.
+        public bool create_database()
         {
             try
             {
@@ -42,71 +47,79 @@ namespace buylist
                     setup_database_folder();
                     set_databasefolder_complete();
 
-                    var connection = new SQLiteConnection(db_path);
+                    var connection = new SQLiteConnection(m_db_path);
                     connection.CreateTable<ShopItem>();
                 }
-                return "Database created";
+                return true;
             }
             catch (SQLiteException ex)
             {
                 Console.WriteLine("exception handled while creating database:{0}", ex.Message);
-                return ex.Message;
+                return false;
             }
         }
-
-        public string insert_update_data(ShopItem data)
+        //------------------------------------------------------------------------//
+        //all addition / insertion are performed using this function
+        public bool insert_update_data(ShopItem data)
         {
             try
             {
-                var db = new SQLiteConnection(db_path);
+                var db = new SQLiteConnection(m_db_path);
                     if (0 != db.Insert(data))
                         db.Update(data);
-                return "Single data file inserted or updated";
+                return true;
             }
             catch (SQLiteException ex)
             {
                 Console.WriteLine("exception handled while inserting data:{0}", ex.Message);
-                return ex.Message;
+                return false;
             }
         }
-        public string update_data(ShopItem data)
+        //------------------------------------------------------------------------//
+        //used to replace an existing row
+        public bool update_data(ShopItem data)
         {
             try
             {
-                var db = new SQLiteConnection(db_path);
+                var db = new SQLiteConnection(m_db_path);
                 //returns the number of rows affected
                 if ( 0 == db.InsertOrReplace(data) )
                 {
-                    return "failed";
+                    return false;
                 }
-                return "succeeded";
+                return true;
             }
             catch (SQLiteException ex)
             {
                 Console.WriteLine("exception handled while replacing data:{0}", ex.Message);
-                return ex.Message;
+                return false;
             }
         }
-        public string insert_update_all(IEnumerable<ShopItem> data)
+        //------------------------------------------------------------------------//
+        //not used yet
+        public bool insert_update_all(IEnumerable<ShopItem> data)
         {
             try
             {
-                var db = new SQLiteConnection(db_path);
+                var db = new SQLiteConnection(m_db_path);
                 if (db.InsertAll(data) != 0)
                     db.UpdateAll(data);
-                return "List of data inserted or updated";
+                return true;
             }
             catch (SQLiteException ex)
             {
                 Console.WriteLine("exception handled while inserting data:{0}", ex.Message);
-                return ex.Message;
+                return false;
             }
         }
+        //------------------------------------------------------------------------//
+        //returns an iteratable object <ShopItem> based on the query
+        //values not queried for will be empty in that object
         public IEnumerable<ShopItem> query_selected_values(string cmd)
         {
             try
             {
-                var db = new SQLiteConnection(db_path);
+                var db = new SQLiteConnection(m_db_path);
                 return db.Query<ShopItem>(cmd);
             }
             catch (SQLiteException ex)
@@ -115,17 +128,15 @@ namespace buylist
             }
             return null;
         }
+        //------------------------------------------------------------------------//
+        //used for debugging purposes
         public int get_total_records()
         {
             try
             {
-                var db = new SQLiteConnection(db_path);
+                var db = new SQLiteConnection(m_db_path);
                 // this counts all records in the database, it can be slow depending on the size of the database
                 var count = db.ExecuteScalar<int>("SELECT Count(*) FROM ShopItem");
-
-                // for a non-parameterless query
-                // var count = db.ExecuteScalar<int>("SELECT Count(*) FROM ShopItem WHERE FirstName="Amy");
-
                 return count;
             }
             catch (SQLiteException ex)
@@ -134,12 +145,14 @@ namespace buylist
                 return -1;
             }
         }
+        //------------------------------------------------------------------------//
+        //returns the cost of the deleted item for deducting standard balance
         public double delete_rows(int ID)
         {
             double cost = 0;
             try
             {
-                var db = new SQLiteConnection(db_path);
+                var db = new SQLiteConnection(m_db_path);
                 var query = db.Table<ShopItem>().Where(item => item.ID == ID);
                 if (query != null)
                 {
@@ -169,7 +182,7 @@ namespace buylist
                 create_directory();
 
                 // checking is there a directory available in the same external storage, if not create one
-                if (!File.Exists(AppGlobal.DatabasebFilePath))
+                if (!File.Exists(DBGlobal.DatabasebFilePath))
                 {
                     // creating Database folder and file
                     create_workind_dbfile();
@@ -177,7 +190,6 @@ namespace buylist
             }
             catch (Exception ex)
             {
-                //Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
                 Console.WriteLine("ERROR: " + ex.Message);
             }
         }
@@ -188,20 +200,19 @@ namespace buylist
             try
             {
                 // checking folder available or not
-                isExists = System.IO.Directory.Exists(AppGlobal.ExternalAppFolder);
+                isExists = System.IO.Directory.Exists(DBGlobal.ExternalAppFolder);
 
                 // if not create the folder
                 if (!isExists)
-                    System.IO.Directory.CreateDirectory(AppGlobal.ExternalAppFolder);
+                    System.IO.Directory.CreateDirectory(DBGlobal.ExternalAppFolder);
 
-                isExists = System.IO.Directory.Exists(AppGlobal.ExternalAppDBFolder);
+                isExists = System.IO.Directory.Exists(DBGlobal.ExternalAppDBFolder);
 
                 if (!isExists)
-                    System.IO.Directory.CreateDirectory(AppGlobal.ExternalAppDBFolder);
+                    System.IO.Directory.CreateDirectory(DBGlobal.ExternalAppDBFolder);
             }
             catch (Exception ex)
             {
-                //Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
                 Console.WriteLine("ERROR: " + ex.Message);
             }
         }
@@ -211,35 +222,31 @@ namespace buylist
             try
             {
                 //checking file exist in location or not
-                if (!File.Exists(AppGlobal.DatabasebFilePath))
+                if (!File.Exists(DBGlobal.DatabasebFilePath))
                 {
+                    using (var dest = File.Create(DBGlobal.DatabasebFilePath))
                     {
-                        using (var dest = File.Create(AppGlobal.DatabasebFilePath))
-                        {
-                            Console.WriteLine("Created the database filed:{0}", AppGlobal.DatabasebFilePath);
-                        }
+                        Console.WriteLine("Created the database filed:{0}", DBGlobal.DatabasebFilePath);
                     }
                 }
             }
             catch (System.Exception ex)
             {
-                //Toast.MakeText(this, ex.ToString(), ToastLength.Long).Show();
                 Console.WriteLine("ERROR: " + ex.Message);
             }
         }
         //one time task - db relocation check
         private bool is_databasefolder_setup()
         {
-            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(mContext);
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(m_context);
             bool retvalue = prefs.GetBoolean("database_relocated", false);
             return retvalue;
         }
         private void set_databasefolder_complete()
         {
-            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(mContext);
+            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(m_context);
             ISharedPreferencesEditor editor = prefs.Edit();
             editor.PutBoolean("database_relocated", true);
-            // editor.Commit();    // applies changes synchronously on older APIs
             editor.Apply();        // applies changes asynchronously on newer APIs
         }
         //------------------------------------------------------------------------//
