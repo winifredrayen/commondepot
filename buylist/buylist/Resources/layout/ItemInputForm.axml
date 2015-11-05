@@ -4,7 +4,9 @@
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:minHeight="40dp"
+    android:minWidth="40dp">
     <EditText
         android:id="@+id/item_brief"
         android:layout_width="match_parent"

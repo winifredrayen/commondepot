@@ -31,5 +31,5 @@
         android:paddingLeft="5dp"
         android:paddingTop="10dp"
         android:layout_weight="50"
-        android:focusable="true" />
+        android:focusable="false" />
 </LinearLayout>

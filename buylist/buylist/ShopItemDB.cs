@@ -14,7 +14,7 @@ using SQLite;
 
 namespace buylist
 {
-    class ShopItem
+    public class ShopItem
     {
         [PrimaryKey,AutoIncrement]
         public int ID { get; set; }

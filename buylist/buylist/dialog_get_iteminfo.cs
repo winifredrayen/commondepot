@@ -29,11 +29,23 @@ namespace buylist
     }
     public class OnShopItemSaveEvtArgs : EventArgs
     {
+        private bool m_updatetable;
         private string mItem_Brief;
         private double mItem_Cost;
         private double mItem_Priority;
         private string mItem_Desc;
+        private int m_ID;
 
+        public bool updatetable
+        {
+            get { return m_updatetable; }
+            set { m_updatetable = value; }
+        }
+        public int ID
+        {
+            get { return m_ID; }
+            set { m_ID = value; }
+        }
         public string item_brief
         {
             get { return mItem_Brief;  }
@@ -54,16 +66,27 @@ namespace buylist
             get { return mItem_Priority; }
             set { mItem_Priority = value; }
         }
-        public OnShopItemSaveEvtArgs(string _brief, string _desc, double _priority, double _cost) : base()
+        public OnShopItemSaveEvtArgs(string _brief, string _desc, double _priority, double _cost, bool _updatetable, int _ID = 0) : base()
         {
+            ID = _ID;
             item_brief = _brief;
             item_Cost = _cost;
             item_priority = _priority;
             item_description = _desc;
+            updatetable = _updatetable;
         }
     }
     public class dialog_getitem_info : DialogFragment
     {
+        //UI fill-data
+        private ShopItem mShopItem;
+
+        public ShopItem this_shopitem
+        {
+            get { return mShopItem; }
+            set { mShopItem = value; }
+        }
+        //UI elements
         private EditText mitem_cost;
         private EditText mitem_brief;
         private EditText mitem_description;
@@ -85,14 +108,26 @@ namespace buylist
             Button savebtn = view.FindViewById<Button>(Resource.Id.savebtn);
             //user has clicked the save button
             savebtn.Click += btn_onSaveShopItems;
+            if(mShopItem != null) setitemcontent();
             return view; 
         }
+
+        private void setitemcontent()
+        {
+            //initialize with the existing values if available
+            mitem_brief.Text = mShopItem.ItemBrief;
+            mitem_cost.Text = mShopItem.ItemCost.ToString();
+            mitem_description.Text = mShopItem.ItemDescription;
+            mitem_priority.Rating = (float)mShopItem.ItemPriority;
+            //Console.WriteLine("What was the previously set priority? :{0}", mShopItem.ItemPriority);
+        }
+
         void btn_onSaveShopItems(object sender, EventArgs e)
         {
             //evaluation is pending here. 
             if( mitem_brief.Text.Equals(string.Empty) || 
                 mitem_cost.Text.Equals(string.Empty) ||
-                mitem_priority.Rating.ToString().Equals(string.Empty) )
+                mitem_priority.Rating == 0 )
             {
                 Console.WriteLine("item description, cost and priority are mandatory");
                 mOnError.Invoke(this, new OnShopItemError("error - item description, cost and priority are mandatory"));
@@ -105,7 +140,7 @@ namespace buylist
 
                 //make an event and broadcast it. --> mOnShopItemAdded
                 mOnShopItemAdded.Invoke(this, new OnShopItemSaveEvtArgs(mitem_brief.Text, mitem_description.Text,
-                    priorityvalue, costvalue));
+                    priorityvalue, costvalue,(mShopItem != null), (mShopItem != null) ? mShopItem.ID : 0));
 
                 this.Dismiss();
             }

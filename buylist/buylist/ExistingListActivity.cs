@@ -38,7 +38,10 @@ namespace buylist
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.existinglistview);
-             
+
+            mListview = FindViewById<ListView>(Resource.Id.existinglist);
+            mListview.ItemClick += MListview_ItemClick;
+
             db_to_list_refresh();
 
             mAddItem = FindViewById<Button>(Resource.Id.additem);
@@ -90,11 +93,13 @@ namespace buylist
         }
         //------------------------------------------------------------------------//
         //Dialog options - TBD common interface
-        private void showItemInputDlg()
+        private void showItemInputDlg(ShopItem item = null)
         {
             //Pull up input dialog
             FragmentTransaction transaction = FragmentManager.BeginTransaction();
             dialog_getitem_info input_dialog = new dialog_getitem_info();
+            if(item != null){ input_dialog.this_shopitem = item; }
+
             input_dialog.Show(transaction, "dialog_fragment");
             input_dialog.mOnShopItemAdded += onSaveShopItemdata;
             input_dialog.mOnError += OnErrorHandler;
@@ -125,12 +130,33 @@ namespace buylist
 
         private void onSaveShopItemdata(object sender, OnShopItemSaveEvtArgs e)
         {
-            ShopItem item_info = new ShopItem { ItemBrief = e.item_brief, ItemCost = e.item_Cost,
-                ItemDescription = e.item_description, ItemPriority = e.item_priority };
+            string result;
 
             //create the db helper class
             var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath,this);
-            var result = dbhelper.insert_update_data(item_info);
+            if( e.updatetable ) {
+                ShopItem item_info = new ShopItem
+                {
+                    ID = e.ID,
+                    ItemBrief = e.item_brief,
+                    ItemCost = e.item_Cost,
+                    ItemDescription = e.item_description,
+                    ItemPriority = e.item_priority
+                };
+                result = dbhelper.update_data(item_info);
+            }
+            else
+            {
+                ShopItem item_info = new ShopItem
+                {
+                    ItemBrief = e.item_brief,
+                    ItemCost = e.item_Cost,
+                    ItemDescription = e.item_description,
+                    ItemPriority = e.item_priority
+                };
+                result = dbhelper.insert_update_data(item_info);
+            }
+            
             var records = dbhelper.get_total_records();
             Console.WriteLine("DB Update :" + result + " Number of records : ", records);
             db_to_list_refresh();
@@ -185,7 +211,6 @@ namespace buylist
         private void db_to_list_refresh()
         {
             mItems = new List<ShopItem>();
-            mListview = FindViewById<ListView>(Resource.Id.existinglist);
 
             //create the db helper class
             var dbhelper = new DBHelper(AppGlobal.DatabasebFilePath, this);
@@ -206,6 +231,12 @@ namespace buylist
             ListViewAdapter adapter = new ListViewAdapter(this, mItems);
             adapter.mOnItemCheck += Adapter_mOnItemCheck;
             mListview.Adapter = adapter;
+        }
+
+        private void MListview_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            Console.WriteLine("Item clicked priority:{0}", mItems[e.Position].ItemPriority);
+            showItemInputDlg(mItems[e.Position]);
         }
         //------------------------------------------------------------------------//
     }

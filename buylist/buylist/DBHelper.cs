@@ -59,8 +59,8 @@ namespace buylist
             try
             {
                 var db = new SQLiteConnection(db_path);
-                if (db.Insert(data) != 0)
-                    db.Update(data);
+                    if (0 != db.Insert(data))
+                        db.Update(data);
                 return "Single data file inserted or updated";
             }
             catch (SQLiteException ex)
@@ -69,7 +69,24 @@ namespace buylist
                 return ex.Message;
             }
         }
-
+        public string update_data(ShopItem data)
+        {
+            try
+            {
+                var db = new SQLiteConnection(db_path);
+                //returns the number of rows affected
+                if ( 0 == db.InsertOrReplace(data) )
+                {
+                    return "failed";
+                }
+                return "succeeded";
+            }
+            catch (SQLiteException ex)
+            {
+                Console.WriteLine("exception handled while replacing data:{0}", ex.Message);
+                return ex.Message;
+            }
+        }
         public string insert_update_all(IEnumerable<ShopItem> data)
         {
             try
