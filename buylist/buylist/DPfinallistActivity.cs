@@ -21,13 +21,29 @@ namespace buylist
         private ObservableCollection<ShopItem> m_sortedlist = new ObservableCollection<ShopItem>();
         ListViewAdapter m_adapter;
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+            //inorder to refresh the list if you move back & forth this activity
+            refreshUI();
+
+        }
         private void refreshUI()
         {
+            if (null == m_sortedlist)
+                m_sortedlist = new ObservableCollection<ShopItem>();
+
             // Create your application here
             List<ShopItem> all_items = get_all_shopitems();
             float budget = get_monthly_budget();
 
-            m_sortedlist = sortandplace(all_items, budget);
+            List<ShopItem> item_collection = sortandplace(all_items, budget);
+
+            m_sortedlist.Clear();
+            foreach (var item in item_collection)
+            {
+                m_sortedlist.Add(item);
+            }
             m_adapter.NotifyDataSetChanged();
         }
         protected override void OnCreate(Bundle bundle)
@@ -35,8 +51,8 @@ namespace buylist
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.dpoutput);
 
-            mListview = FindViewById<ListView>(Resource.Id.finallist);
             m_adapter = new ListViewAdapter(this, m_sortedlist);
+            mListview = FindViewById<ListView>(Resource.Id.finallist);
             m_adapter.mOnItemCheck += onItemCheck;
             mListview.Adapter = m_adapter;
 
@@ -129,9 +145,9 @@ namespace buylist
             }
             return shop_items;
         }
-        private ObservableCollection<ShopItem> sortandplace(List<ShopItem> _item, float B)
+        private List<ShopItem> sortandplace(List<ShopItem> _item, float B)
         {
-            ObservableCollection<ShopItem> toshowlist = new ObservableCollection<ShopItem>();
+            List<ShopItem> filtered_list = new List<ShopItem>();
             //total capacity = B
             //cost : _item.cost & priority: _item.priority
             int total_budgets = (int)B;
@@ -177,13 +193,13 @@ namespace buylist
             {
                 if(final_matrix[idx,budget_index] != final_matrix[idx-1,budget_index])
                 {
-                    toshowlist.Add(_item[idx-1]);
+                    filtered_list.Add(_item[idx-1]);
                     budget_index = budget_index - cost[idx-1];
                     Console.WriteLine("Item : " + _item[idx-1].ItemBrief + " is in the sack!");
                 }
                 idx = idx - 1;
             }
-            return toshowlist;
+            return filtered_list;
         }
     }
 }

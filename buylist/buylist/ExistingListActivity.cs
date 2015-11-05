@@ -21,7 +21,6 @@ namespace buylist
 
     public class ExistingListActivity : Activity
     {
-        private List<ShopItem> mItems;
         private ListView mListview;
         private Button mAddItem;
         private Button mSaveBudget;
@@ -219,9 +218,7 @@ namespace buylist
         //UI operation: we need to find a neat way, as to do this operation async and tie this with UI thread later on
         private void dbupdateUI()
         {
-            mItems = new List<ShopItem>();
-
-            if( null == mListview )
+            if( null == mItemList)
                 mItemList = new ObservableCollection<ShopItem>();
 
             //create the db helper class
@@ -239,11 +236,9 @@ namespace buylist
             //if there were no entries then we might hv got a null, in that case, take them to add a new entry
             if (db_list != null)
             {
-                mItems.Clear();
                 mItemList.Clear();
                 foreach (var shopping_item in db_list)
                 {
-                    mItems.Add(shopping_item);
                     mItemList.Add(shopping_item);
                 }
             }
@@ -252,8 +247,8 @@ namespace buylist
 
         private void OnListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            Console.WriteLine("Item clicked priority:{0}", mItems[e.Position].ItemPriority);
-            showItemInputDlg(mItems[e.Position]);
+            Console.WriteLine("Item clicked priority:{0}", mItemList[e.Position].ItemPriority);
+            showItemInputDlg(mItemList[e.Position]);
         }
         //------------------------------------------------------------------------//
     }
