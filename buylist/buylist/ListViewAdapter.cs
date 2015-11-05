@@ -12,6 +12,7 @@ using Android.Widget;
 using Java.Lang;
 using System.Collections.ObjectModel;
 using Android.Database;
+using Android.Graphics;
 
 namespace buylist
 {
@@ -76,6 +77,8 @@ namespace buylist
                 //if not create one
                 row = LayoutInflater.From(mContext).Inflate(Resource.Layout.listview_row, null, false);
             }
+            //Android.Graphics.Color bgcolor = getRowColor(mItemList[position].ItemPriority);
+
             TextView tview = row.FindViewById<TextView>(Resource.Id.textitem);
             TextView itemcost = row.FindViewById<TextView>(Resource.Id.itemcost);
             CheckBox chckbox = row.FindViewById<CheckBox>(Resource.Id.itemcheck);
@@ -91,7 +94,6 @@ namespace buylist
 
             return row;
         }
-
         private void onCheckItem(object sender, CompoundButton.CheckedChangeEventArgs e)
         {
             CheckBox cbox = (CheckBox)sender;
