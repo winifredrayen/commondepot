@@ -171,7 +171,23 @@ namespace buylist
             }
             return cost;
         }
-
+        //------------------------------------------------------------------------//
+        //Delete every single thing
+        public bool deleteall()
+        {
+            try
+            {
+                var db = new SQLiteConnection(m_db_path);
+                db.DeleteAll<ShopItem>();
+                db.Commit();
+                return true;
+            }
+            catch (SQLiteException ex)
+            {
+                Console.WriteLine("deleting row has failed, invalid parameters ex.msg :{0}",  ex.Message);
+                return false;
+            }
+        }
         //------------------------------------------------------------------------//
         //DB relocation and directory creation
         private void setup_database_folder()

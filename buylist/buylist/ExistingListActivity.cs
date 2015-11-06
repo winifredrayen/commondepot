@@ -26,6 +26,7 @@ namespace buylist
         private Button mSaveBudget;
         private Button mShowBuylist;
         ListViewAdapter m_adapter;
+        private List<int> m_queue_for_deletion = new List<int>();
         private ObservableCollection<ShopItem> mItemList = new ObservableCollection<ShopItem>();
 
         protected override void OnResume()
@@ -45,7 +46,8 @@ namespace buylist
             m_adapter.mOnItemCheck += OnCheckItemClick;
             mListview.Adapter = m_adapter;
             mListview.ItemClick += OnListViewItemClick;
-            
+            mListview.ItemLongClick += onLongItemClick;
+
             dbupdateUI();
 
             mAddItem = FindViewById<Button>(Resource.Id.additem);
@@ -72,7 +74,7 @@ namespace buylist
                 else
                 {
                     var builder = new AlertDialog.Builder(this)
-                                   .SetTitle("Sorry")
+                                   .SetTitle("Action Required")
                                    .SetMessage("You need to set the monthly shopping-budget first!")
                                    .SetPositiveButton("Ok", (EventHandler<DialogClickEventArgs>)null);
 
@@ -88,6 +90,48 @@ namespace buylist
                 }
             };
         }
+
+        private void onLongItemClick(object sender, AdapterView.ItemLongClickEventArgs e)
+        {
+            var builder = new AlertDialog.Builder(this)
+                .SetTitle("Action Required")
+                .SetMessage("Do you want to remove this item from the list?")
+                .SetNegativeButton("No", (EventHandler<DialogClickEventArgs>)null)
+                .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null);
+
+            var dialog = builder.Create();
+            dialog.Show();
+
+            // Get the buttons.
+            var yesBtn = dialog.GetButton((int)DialogButtonType.Positive);
+            var noBtn = dialog.GetButton((int)DialogButtonType.Negative);
+
+            // Assign our handlers.
+            yesBtn.Click += delegate
+            {
+                Console.WriteLine("Item about to be deleted : " + mItemList[e.Position].ID );
+                //create the db helper class
+                var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath, this);
+                //create or open shopitem database
+                var result = dbhelper.create_database();
+                if (!result)
+                {
+                    Toast.MakeText(this, "Failed to open / create the database ", ToastLength.Long).Show();
+                    return;
+                }
+                dbhelper.delete_rows(mItemList[e.Position].ID);
+                dbupdateUI();
+                dialog.Dismiss();
+            };
+            noBtn.Click += delegate
+            {
+                // Dismiss dialog.
+                Console.WriteLine("I will dismiss now!");
+                dbupdateUI();
+                dialog.Dismiss();
+            };
+        }
+
         //------------------------------------------------------------------------//
         private float get_budget()
         {
@@ -171,14 +215,68 @@ namespace buylist
             Toast.MakeText(this, e.error_msg, ToastLength.Long).Show();
         }
         //------------------------------------------------------------------------//
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            MenuInflater.Inflate(Resource.Menu.options, menu);
+            return base.OnCreateOptionsMenu(menu);
+        }
+        //------------------------------------------------------------------------//
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            switch (item.ItemId)
+            {
+                case Resource.Id.delete_items:
+                    delete_selected_items();
+                    return true;
+                case Resource.Id.delete_all_items:
+                    delete_selected_items(true);
+                    return true;
+                case Resource.Id.clear_items:
+                    m_adapter.NotifyDataSetChanged();
+                    return true;
+                case Resource.Id.help:
+                    //do something
+                    return true;
+                default:
+                    return base.OnOptionsItemSelected(item);
+            }
+            
+        }
+        //------------------------------------------------------------------------//
         private void OnCheckItemClick(object sender, onItemChecked e)
         {
-            if (!e.checkedvalue)
-                return;
-
+            if( m_queue_for_deletion == null )
+            {
+                m_queue_for_deletion = new List<int>();
+            }
+            if ( e.checkedvalue)
+            {
+                m_queue_for_deletion.Add(e.ID);
+            }
+            else
+            {
+                m_queue_for_deletion.Remove(e.ID);
+            }
+        }
+        private void delete_selected_items(bool all_items = false)
+        {
+            string represent_items = "";
+            if( all_items )
+            {
+                represent_items = " all your items ";
+            }
+            else
+            {
+                if (0 == m_queue_for_deletion.Count)
+                {
+                    Toast.MakeText(this, "No items were selected", ToastLength.Long).Show();
+                    return;
+                }
+                represent_items = " those selected items ";
+            }
             var builder = new AlertDialog.Builder(this)
-                .SetTitle("You have selected this queued item !")
-                .SetMessage("Do you want to remove this item from the list?")
+                .SetTitle("Action Required")
+                .SetMessage("Do you want to remove" + represent_items +"from the list?")
                 .SetNegativeButton("No", (EventHandler<DialogClickEventArgs>)null)
                 .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null);
 
@@ -192,7 +290,6 @@ namespace buylist
             // Assign our handlers.
             yesBtn.Click += delegate
             {
-                Console.WriteLine("Item about to be deleted : " + e.ID + "is the value checked? " + e.checkedvalue);
                 //create the db helper class
                 var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath, this);
                 //create or open shopitem database
@@ -202,7 +299,17 @@ namespace buylist
                     Toast.MakeText(this, "Failed to open / create the database ", ToastLength.Long).Show();
                     return;
                 }
-                dbhelper.delete_rows(e.ID);
+                if ( !all_items )
+                {
+                    foreach (var item_id in m_queue_for_deletion)
+                    {
+                        dbhelper.delete_rows(item_id);
+                    }
+                }
+                else
+                {
+                    dbhelper.deleteall();
+                }
                 dbupdateUI();
                 dialog.Dismiss();
             };
@@ -210,7 +317,7 @@ namespace buylist
             {
                 // Dismiss dialog.
                 Console.WriteLine("I will dismiss now!");
-                dbupdateUI();
+                m_adapter.NotifyDataSetChanged();
                 dialog.Dismiss();
             };
         }
@@ -242,6 +349,7 @@ namespace buylist
                     mItemList.Add(shopping_item);
                 }
             }
+            m_queue_for_deletion.Clear();
             m_adapter.NotifyDataSetChanged();
         }
 

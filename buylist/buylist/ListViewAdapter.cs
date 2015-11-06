@@ -86,6 +86,7 @@ namespace buylist
             tview.Text = mItemList[position].ItemBrief;
             itemcost.Text = mItemList[position].ItemCost.ToString();
 
+            chckbox.Checked = false;
             chckbox.Tag = mItemList[position].ID.ToString();
 
             //fix for accumulating event handlers for every getview 
@@ -99,7 +100,6 @@ namespace buylist
             CheckBox cbox = (CheckBox)sender;
             Console.WriteLine("Checked/Unchecked!!" + Int32.Parse(cbox.Tag.ToString()));
             mOnItemCheck.Invoke(this, new onItemChecked(Int32.Parse(cbox.Tag.ToString()), e.IsChecked));
-            cbox.Checked = false;
         }
 
         public override void RegisterDataSetObserver(DataSetObserver observer)
@@ -115,6 +115,5 @@ namespace buylist
                observer.OnChanged();
            }
         }
-
     }
 }

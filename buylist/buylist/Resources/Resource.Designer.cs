@@ -101,74 +101,86 @@ namespace buylist
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f080002
-			public const int additem = 2131230722;
+			// aapt resource value: 0x7f090002
+			public const int additem = 2131296258;
 			
-			// aapt resource value: 0x7f080007
-			public const int budgetvalue = 2131230727;
+			// aapt resource value: 0x7f090007
+			public const int budgetvalue = 2131296263;
 			
-			// aapt resource value: 0x7f080012
-			public const int descripion1 = 2131230738;
+			// aapt resource value: 0x7f090019
+			public const int clear_items = 2131296281;
 			
-			// aapt resource value: 0x7f080013
-			public const int descripion2 = 2131230739;
+			// aapt resource value: 0x7f090018
+			public const int delete_all_items = 2131296280;
 			
-			// aapt resource value: 0x7f080014
-			public const int descripion3 = 2131230740;
+			// aapt resource value: 0x7f090017
+			public const int delete_items = 2131296279;
 			
-			// aapt resource value: 0x7f080015
-			public const int descripion4 = 2131230741;
+			// aapt resource value: 0x7f090012
+			public const int descripion1 = 2131296274;
 			
-			// aapt resource value: 0x7f080005
-			public const int existinglist = 2131230725;
+			// aapt resource value: 0x7f090013
+			public const int descripion2 = 2131296275;
 			
-			// aapt resource value: 0x7f080001
-			public const int finallist = 2131230721;
+			// aapt resource value: 0x7f090014
+			public const int descripion3 = 2131296276;
 			
-			// aapt resource value: 0x7f080003
-			public const int getbudget = 2131230723;
+			// aapt resource value: 0x7f090015
+			public const int descripion4 = 2131296277;
 			
-			// aapt resource value: 0x7f080016
-			public const int gobutton = 2131230742;
+			// aapt resource value: 0x7f090005
+			public const int existinglist = 2131296261;
 			
-			// aapt resource value: 0x7f080000
-			public const int help_header = 2131230720;
+			// aapt resource value: 0x7f090001
+			public const int finallist = 2131296257;
 			
-			// aapt resource value: 0x7f080009
-			public const int item_brief = 2131230729;
+			// aapt resource value: 0x7f090003
+			public const int getbudget = 2131296259;
 			
-			// aapt resource value: 0x7f08000a
-			public const int item_cost = 2131230730;
+			// aapt resource value: 0x7f090016
+			public const int gobutton = 2131296278;
 			
-			// aapt resource value: 0x7f08000c
-			public const int item_desc = 2131230732;
+			// aapt resource value: 0x7f09001a
+			public const int help = 2131296282;
 			
-			// aapt resource value: 0x7f08000b
-			public const int item_priority = 2131230731;
+			// aapt resource value: 0x7f090000
+			public const int help_header = 2131296256;
 			
-			// aapt resource value: 0x7f080010
-			public const int itemcheck = 2131230736;
+			// aapt resource value: 0x7f090009
+			public const int item_brief = 2131296265;
 			
-			// aapt resource value: 0x7f08000f
-			public const int itemcost = 2131230735;
+			// aapt resource value: 0x7f09000a
+			public const int item_cost = 2131296266;
 			
-			// aapt resource value: 0x7f080011
-			public const int mainheader = 2131230737;
+			// aapt resource value: 0x7f09000c
+			public const int item_desc = 2131296268;
 			
-			// aapt resource value: 0x7f08000d
-			public const int savebtn = 2131230733;
+			// aapt resource value: 0x7f09000b
+			public const int item_priority = 2131296267;
 			
-			// aapt resource value: 0x7f080008
-			public const int savebudget = 2131230728;
+			// aapt resource value: 0x7f090010
+			public const int itemcheck = 2131296272;
 			
-			// aapt resource value: 0x7f080006
-			public const int textView1 = 2131230726;
+			// aapt resource value: 0x7f09000f
+			public const int itemcost = 2131296271;
 			
-			// aapt resource value: 0x7f08000e
-			public const int textitem = 2131230734;
+			// aapt resource value: 0x7f090011
+			public const int mainheader = 2131296273;
 			
-			// aapt resource value: 0x7f080004
-			public const int whattobuy = 2131230724;
+			// aapt resource value: 0x7f09000d
+			public const int savebtn = 2131296269;
+			
+			// aapt resource value: 0x7f090008
+			public const int savebudget = 2131296264;
+			
+			// aapt resource value: 0x7f090006
+			public const int textView1 = 2131296262;
+			
+			// aapt resource value: 0x7f09000e
+			public const int textitem = 2131296270;
+			
+			// aapt resource value: 0x7f090004
+			public const int whattobuy = 2131296260;
 			
 			static Id()
 			{
@@ -211,11 +223,36 @@ namespace buylist
 			}
 		}
 		
+		public partial class Menu
+		{
+			
+			// aapt resource value: 0x7f080000
+			public const int options = 2131230720;
+			
+			static Menu()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Menu()
+			{
+			}
+		}
+		
 		public partial class String
 		{
 			
 			// aapt resource value: 0x7f060000
 			public const int ApplicationName = 2131099648;
+			
+			// aapt resource value: 0x7f06000f
+			public const int clear = 2131099663;
+			
+			// aapt resource value: 0x7f06000d
+			public const int delete_all_items = 2131099661;
+			
+			// aapt resource value: 0x7f06000c
+			public const int delete_m_items = 2131099660;
 			
 			// aapt resource value: 0x7f06000a
 			public const int description = 2131099658;
@@ -231,6 +268,9 @@ namespace buylist
 			
 			// aapt resource value: 0x7f06000b
 			public const int help = 2131099659;
+			
+			// aapt resource value: 0x7f06000e
+			public const int helpsetting = 2131099662;
 			
 			// aapt resource value: 0x7f060009
 			public const int item_cost = 2131099657;

@@ -13,7 +13,7 @@
         android:id="@+id/mainheader"
         android:gravity="center"
         android:layout_weight="1.25"
-        android:padding="5dp" />
+        android:background="@drawable/shape_rounded_bluegray" />
     <TextView
         android:text="@string/first_line"
         android:textAppearance="?android:attr/textAppearanceMedium"

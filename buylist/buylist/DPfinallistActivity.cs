@@ -38,8 +38,8 @@ namespace buylist
             float budget = get_monthly_budget();
 
             List<ShopItem> item_collection = sortandplace(all_items, budget);
-
             m_sortedlist.Clear();
+            //this clearing part is very important 
             foreach (var item in item_collection)
             {
                 m_sortedlist.Add(item);
