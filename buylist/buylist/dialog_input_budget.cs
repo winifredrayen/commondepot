@@ -57,7 +57,7 @@ namespace buylist
         private void onSaveButtonClicked(object sender, EventArgs e)
         {
             //evaluation is pending here. 
-            if( mBudgetInput.Text.Equals(string.Empty))
+            if( mBudgetInput.Text.Equals("0"))
             {
                 Console.WriteLine("ERROR: Budget cannot be empty");
                 mOnError.Invoke(this, new OnShopItemError("error: Budget value cannot be empty"));
