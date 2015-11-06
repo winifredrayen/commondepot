@@ -101,6 +101,9 @@ namespace buylist
 		public partial class Id
 		{
 			
+			// aapt resource value: 0x7f09001a
+			public const int about = 2131296282;
+			
 			// aapt resource value: 0x7f090002
 			public const int additem = 2131296258;
 			
@@ -139,9 +142,6 @@ namespace buylist
 			
 			// aapt resource value: 0x7f090016
 			public const int gobutton = 2131296278;
-			
-			// aapt resource value: 0x7f09001a
-			public const int help = 2131296282;
 			
 			// aapt resource value: 0x7f090000
 			public const int help_header = 2131296256;

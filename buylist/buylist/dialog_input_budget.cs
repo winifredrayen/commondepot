@@ -48,6 +48,7 @@ namespace buylist
             mBudgetInput = view.FindViewById<EditText>(Resource.Id.budgetvalue);
 
             mBudgetInput.Text = m_existingbudget.ToString();
+            mBudgetInput.SetSelection(mBudgetInput.Text.Length);
 
             mSavebtn.Click += onSaveButtonClicked;
             return view;

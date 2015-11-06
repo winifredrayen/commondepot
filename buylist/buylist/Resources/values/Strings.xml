@@ -15,7 +15,7 @@
     <string name="help">Based on your input, these items fit : </string>
     <string name="delete_m_items">Delete marked items</string>
     <string name="delete_all_items">Delete all items</string>
-    <string name="helpsetting">Help</string>
+    <string name="helpsetting">About</string>
     <string name="clear">Clear all items</string>
     
 </resources>
