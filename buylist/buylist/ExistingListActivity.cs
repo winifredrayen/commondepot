@@ -19,7 +19,7 @@ using HtmlAgilityPack;
 namespace buylist
 {
 
-    [Activity(Label = "Shopping list options")]
+    [Activity(Label = "Shop off", Icon = "@drawable/icon")]
     [IntentFilter(new[] { Intent.ActionSend }, 
         Categories = new[] {
             Intent.CategoryDefault,
@@ -120,144 +120,168 @@ namespace buylist
         private List<string> findPrice(string url,HtmlDocument doc)
         {
             List<string> cost_collection = new List<string>();
-
-            if ( url.Contains("amazon.com"))
+            try
             {
-                var trnodes = doc.DocumentNode.Descendants("tr")
-                    .Where(nd => nd.Id == "priceblock_dealprice_row" ||
-                    nd.Id == "priceblock_ourprice_row" ||
-                    nd.InnerText.Contains("price"));
-
-                foreach (var tnode in trnodes )
+                if (url.Contains("amazon.com"))
                 {
-                    string target_string = tnode.InnerText;
-                    foreach (Match m in Regex.Matches(target_string, @"\$\d*\.?,?\d*"))
+                    var trnodes = doc.DocumentNode.Descendants("tr")
+                        .Where(nd => nd.Id == "priceblock_dealprice_row" ||
+                        nd.Id == "priceblock_ourprice_row" ||
+                        nd.InnerText.Contains("price"));
+
+                    foreach (var tnode in trnodes)
                     {
-                        //Console.WriteLine("PRICE:" + m.ToString());
-                        cost_collection.Add(m.ToString());
+                        string target_string = tnode.InnerText;
+                        foreach (Match m in Regex.Matches(target_string, @"\$\d*\.?,?\d*"))
+                        {
+                            //Console.WriteLine("PRICE:" + m.ToString());
+                            cost_collection.Add(m.ToString());
+                        }
+                    }
+                }
+                else
+                {
+                    Regex linkParser = new Regex(@"/\s*\$\s*\d+.*\d/", RegexOptions.Compiled);
+                    foreach (HtmlNode tnode in doc.DocumentNode.Descendants().Where(n => n.Id.Contains("price") ||
+                       n.GetAttributeValue("class", "").Contains("price") ||
+                       n.Attributes.Contains("price")))
+                    {
+                        string target_string = tnode.InnerText;
+
+                        foreach (Match m in Regex.Matches(target_string, @"\$\d*\.?,?\d*"))
+                        {
+                            //Console.WriteLine("PRICE:" + m.ToString());
+                            cost_collection.Add(m.ToString());
+                        }
                     }
                 }
             }
-            else
+            catch(Exception ex)
             {
-                Regex linkParser = new Regex(@"/\s*\$\s*\d+.*\d/", RegexOptions.Compiled);
-                foreach (HtmlNode tnode in doc.DocumentNode.Descendants().Where(n => n.Id.Contains("price") ||
-                   n.GetAttributeValue("class", "").Contains("price") ||
-                   n.Attributes.Contains("price")))
-                {
-                    string target_string = tnode.InnerText;
-
-                    foreach (Match m in Regex.Matches(target_string, @"\$\d*\.?,?\d*"))
-                    {
-                        //Console.WriteLine("PRICE:" + m.ToString());
-                        cost_collection.Add(m.ToString());
-                    }
-                }
+                Console.WriteLine("Crashed / ExceptionHandled:{0}" + ex.Message);
             }
             return cost_collection;
         }
         private void do_url_processing(string rawString)
         {
             mProgressDialog = ProgressDialog.Show(this, "Please wait...", "Loading this item's info...", true);
-
-            string url_match = "";
-            Regex linkParser = new Regex(@"\b(?:https?://)\S+\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            foreach (Match m in linkParser.Matches(rawString))
-            {
-                Console.WriteLine("URL : {0}", m);
-                url_match = m.ToString();
-            }
             WebClient webClient = new WebClient();
-
-            var url = new Uri(url_match); // Html home page
-            webClient.Encoding = Encoding.UTF8;
-            webClient.DownloadStringAsync(url);
+            string url_match = "";
+            try
+            {
+                Regex linkParser = new Regex(@"\b(?:https?://)\S+\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                foreach (Match m in linkParser.Matches(rawString))
+                {
+                    Console.WriteLine("URL : {0}", m);
+                    url_match = m.ToString();
+                }
+                var url = new Uri(url_match); // Html home page
+                webClient.Encoding = Encoding.UTF8;
+                webClient.DownloadStringAsync(url);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Crashed / ExceptionHandled:{0}" + ex.Message);
+            }
 
             webClient.DownloadStringCompleted += (s, e)  =>
             {
                 var text = e.Result; // get the downloaded text
                 HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(text);
-
-                double minvalue = double.PositiveInfinity;
-                ShopItem temp_item = new ShopItem();
-
-                var all_prices = findPrice(url_match, doc);
-                int maxcount = all_prices.Count > 2 ? 2 : all_prices.Count;
-
-                for (int i = 0; i < maxcount; i++)
+                try
                 {
-                    Console.WriteLine("PRICE:" + all_prices[i]);
-                    string tp = all_prices[i].Replace("$", "");
-                    if( !string.IsNullOrEmpty(tp) )
+                    doc.LoadHtml(text);
+                    double minvalue = double.PositiveInfinity;
+                    ShopItem temp_item = new ShopItem();
+
+                    var all_prices = findPrice(url_match, doc);
+                    int maxcount = all_prices.Count > 2 ? 2 : all_prices.Count;
+
+                    for (int i = 0; i < maxcount; i++)
                     {
-                        double temp = Double.Parse(tp.ToString());
-                        if (minvalue > temp)
+                        Console.WriteLine("PRICE:" + all_prices[i]);
+                        string tp = all_prices[i].Replace("$", "");
+                        if (!string.IsNullOrEmpty(tp))
                         {
-                            minvalue = temp;
+                            double temp = Double.Parse(tp.ToString());
+                            if (minvalue > temp)
+                            {
+                                minvalue = temp;
+                            }
                         }
                     }
-                }
-                if( !double.IsInfinity(minvalue))
-                    temp_item.ItemCost = minvalue;
-                else
-                    temp_item.ItemCost = 0;
+                    if (!double.IsInfinity(minvalue))
+                        temp_item.ItemCost = minvalue;
+                    else
+                        temp_item.ItemCost = 0;
 
-                foreach (var node in doc.DocumentNode.Descendants("meta"))
+                    foreach (var node in doc.DocumentNode.Descendants("meta"))
+                    {
+                        if (node != null &&
+                        node.Attributes["name"] != null &&
+                        node.Attributes["name"].Value == "description")
+                        {
+                            HtmlAttribute desc;
+                            desc = node.Attributes["content"];
+                            string fulldescription = desc.Value;
+                            temp_item.ItemDescription = fulldescription;
+                            Console.WriteLine("DESCRIPTION:{0}", fulldescription.ToString());
+                        }
+                        if (node != null &&
+                        node.Attributes["name"] != null &&
+                        node.Attributes["name"].Value == "title")
+                        {
+                            HtmlAttribute desc;
+                            desc = node.Attributes["content"];
+                            string title = desc.Value;
+                            Console.WriteLine("TITLE:{0}", title.ToString());
+                            temp_item.ItemBrief = title;
+                        }
+                        else if (node != null &&
+                            node.Attributes["property"] != null &&
+                            node.Attributes["property"].Value.Contains("title"))
+                        {
+                            HtmlAttribute desc;
+                            desc = node.Attributes["content"];
+                            string title = desc.Value;
+                            Console.WriteLine("TITLE:{0}", title.ToString());
+                            temp_item.ItemBrief = title;
+                        }
+                    }
+                    temp_item.ItemPriority = 2.5; //average
+
+                    if (null == temp_item.ItemBrief)
+                    {
+                        temp_item.ItemBrief = temp_item.ItemDescription;
+                        temp_item.ItemDescription = "";
+                    }
+                    ThreadPool.QueueUserWorkItem(o => SlowMethod(temp_item));
+                }
+                catch(Exception ex)
                 {
-                    if (node != null &&
-                    node.Attributes["name"] != null &&
-                    node.Attributes["name"].Value == "description")
-                    {
-                        HtmlAttribute desc;
-                        desc = node.Attributes["content"];
-                        string fulldescription = desc.Value;
-                        temp_item.ItemDescription = fulldescription;
-                        Console.WriteLine("DESCRIPTION:{0}", fulldescription.ToString());
-                    }
-                    if (node != null &&
-                    node.Attributes["name"] != null &&
-                    node.Attributes["name"].Value == "title")
-                    {
-                        HtmlAttribute desc;
-                        desc = node.Attributes["content"];
-                        string title = desc.Value;
-                        Console.WriteLine("TITLE:{0}", title.ToString());
-                        temp_item.ItemBrief = title;
-                    }
-                    else if (node != null &&
-                        node.Attributes["property"] != null &&
-                        node.Attributes["property"].Value.Contains("title"))
-                    {
-                        HtmlAttribute desc;
-                        desc = node.Attributes["content"];
-                        string title = desc.Value;
-                        Console.WriteLine("TITLE:{0}", title.ToString());
-                        temp_item.ItemBrief = title;
-                    }
+                    Console.WriteLine("ExceptionHandled:{0}" + ex.Message);
                 }
-                temp_item.ItemPriority = 2.5; //average
-
-                if (null == temp_item.ItemBrief)
-                {
-                    temp_item.ItemBrief = temp_item.ItemDescription;
-                    temp_item.ItemDescription = "";
-                }
-
-                ThreadPool.QueueUserWorkItem(o => SlowMethod(temp_item));
             };
         }
 
         private void SlowMethod(ShopItem item)
         {
-            RunOnUiThread(() =>
+            try
             {
-                Toast.MakeText(this, "Toast within progress dialog.", ToastLength.Long).Show();
-                mProgressDialog.Hide();
+                RunOnUiThread(() =>
+                {
+                    //Toast.MakeText(this, "Toast within progress dialog.", ToastLength.Long).Show();
+                    mProgressDialog.Hide();
 
-                showItemInputDlg(dboperations.insert_from_src, item);
-                Console.WriteLine("UI thread execution :)");
-            });
+                    showItemInputDlg(dboperations.insert_from_src, item);
+                    Console.WriteLine("UI thread execution :)");
+                });
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("ExceptioHandled:{0}" + ex.Message);
+            }
+
         }
 
         //------------------------------------------------------------------------//
@@ -272,75 +296,82 @@ namespace buylist
         {
             string represent_items = "";
             List<int> ids_to_delete = new List<int>();
-
-            switch (dopt)
+            try
             {
-                case deleteoptions.delete_this_item:
-                    represent_items = " this item ";
-                    ids_to_delete.Add(ID);
-                    break;
-                case deleteoptions.delete_selected_items:
-                    represent_items = " those selected items ";
-                    if (0 == m_queue_for_deletion.Count)
+                switch (dopt)
+                {
+                    case deleteoptions.delete_this_item:
+                        represent_items = " this item ";
+                        ids_to_delete.Add(ID);
+                        break;
+                    case deleteoptions.delete_selected_items:
+                        represent_items = " those selected items ";
+                        if (0 == m_queue_for_deletion.Count)
+                        {
+                            Toast.MakeText(this, "No items were selected", ToastLength.Long).Show();
+                            return;
+                        }
+                        ids_to_delete = m_queue_for_deletion;
+                        break;
+                    case deleteoptions.delete_all_items:
+                        represent_items = " all your items ";
+                        if (0 == mItemList.Count)
+                        {
+                            Toast.MakeText(this, "No items are present", ToastLength.Long).Show();
+                            return;
+                        }
+                        foreach (var i in mItemList)
+                            ids_to_delete.Add(i.ID);
+                        break;
+                    default:
+                        break;
+                }
+                var builder = new AlertDialog.Builder(this)
+                    .SetTitle("Action Required")
+                    .SetMessage("Do you want to remove" + represent_items + "from the list?")
+                    .SetNegativeButton("No", (EventHandler<DialogClickEventArgs>)null)
+                    .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null);
+
+                var dialog = builder.Create();
+                dialog.Show();
+
+                // Get the buttons.
+                var yesBtn = dialog.GetButton((int)DialogButtonType.Positive);
+                var noBtn = dialog.GetButton((int)DialogButtonType.Negative);
+
+                // Assign our handlers.
+                yesBtn.Click += delegate
+                {
+                    //create the db helper class
+                    var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath, this);
+                    //create or open shopitem database
+                    var result = dbhelper.create_database();
+                    if (!result)
                     {
-                        Toast.MakeText(this, "No items were selected", ToastLength.Long).Show();
+                        Toast.MakeText(this, "Failed to open / create the database ", ToastLength.Long).Show();
                         return;
                     }
-                    ids_to_delete = m_queue_for_deletion;
-                    break;
-                case deleteoptions.delete_all_items:
-                    represent_items = " all your items ";
-                    if (0 == mItemList.Count)
+
+                    foreach (var item_id in ids_to_delete)
                     {
-                        Toast.MakeText(this, "No items are present", ToastLength.Long).Show();
-                        return;
+                        dbhelper.delete_rows(item_id);
                     }
-                    foreach (var i in mItemList)
-                        ids_to_delete.Add(i.ID);
-                    break;
-                default:
-                    break;
+                    dbupdateUI();
+                    dialog.Dismiss();
+                };
+                noBtn.Click += delegate
+                {
+                    // Dismiss dialog.
+                    Console.WriteLine("I will dismiss now!");
+                    m_adapter.NotifyDataSetChanged();
+                    dialog.Dismiss();
+                };
             }
-            var builder = new AlertDialog.Builder(this)
-                .SetTitle("Action Required")
-                .SetMessage("Do you want to remove" + represent_items + "from the list?")
-                .SetNegativeButton("No", (EventHandler<DialogClickEventArgs>)null)
-                .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null);
-
-            var dialog = builder.Create();
-            dialog.Show();
-
-            // Get the buttons.
-            var yesBtn = dialog.GetButton((int)DialogButtonType.Positive);
-            var noBtn = dialog.GetButton((int)DialogButtonType.Negative);
-
-            // Assign our handlers.
-            yesBtn.Click += delegate
+            catch(Exception ex)
             {
-                //create the db helper class
-                var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath, this);
-                //create or open shopitem database
-                var result = dbhelper.create_database();
-                if (!result)
-                {
-                    Toast.MakeText(this, "Failed to open / create the database ", ToastLength.Long).Show();
-                    return;
-                }
+                Console.WriteLine("ExceptioHandled:{0}" + ex.Message);
+            }
 
-                foreach (var item_id in ids_to_delete)
-                {
-                    dbhelper.delete_rows(item_id);
-                }
-                dbupdateUI();
-                dialog.Dismiss();
-            };
-            noBtn.Click += delegate
-            {
-                // Dismiss dialog.
-                Console.WriteLine("I will dismiss now!");
-                m_adapter.NotifyDataSetChanged();
-                dialog.Dismiss();
-            };
         }
         //------------------------------------------------------------------------//
         //helper : reading the sharedprefs

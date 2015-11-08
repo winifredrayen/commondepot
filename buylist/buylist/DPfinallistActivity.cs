@@ -14,7 +14,7 @@ using System.Collections.ObjectModel;
 
 namespace buylist
 {
-    [Activity(Label = "Happy shopping!")]
+    [Activity(Label = "Happy shopping!", Icon = "@drawable/icon")]
     public class DPfinallistActivity : Activity
     {
         private ListView mListview;
