@@ -35,7 +35,7 @@ namespace buylist
         ListViewAdapter m_adapter;
         private List<int> m_queue_for_deletion = new List<int>();
         private ObservableCollection<ShopItem> mItemList = new ObservableCollection<ShopItem>();
-
+        private ProgressDialog mProgressDialog;
         private enum deleteoptions
         {
             delete_this_item,
@@ -45,7 +45,8 @@ namespace buylist
         public enum dboperations
         {
             update_table,
-            insert_table
+            insert_manually,
+            insert_from_src,
         }
         protected override void OnResume()
         {
@@ -83,7 +84,7 @@ namespace buylist
             //quick dialog boxes
             mAddItem.Click += (object sender, EventArgs e) =>
             {
-                showItemInputDlg(dboperations.insert_table);
+                showItemInputDlg(dboperations.insert_manually);
             };
 
             mSaveBudget.Click += delegate
@@ -157,6 +158,8 @@ namespace buylist
         }
         private void do_url_processing(string rawString)
         {
+            mProgressDialog = ProgressDialog.Show(this, "Please wait...", "Loading this item's info...", true);
+
             string url_match = "";
             Regex linkParser = new Regex(@"\b(?:https?://)\S+\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             foreach (Match m in linkParser.Matches(rawString))
@@ -249,7 +252,10 @@ namespace buylist
         {
             RunOnUiThread(() =>
             {
-                showItemInputDlg(dboperations.insert_table,item);
+                Toast.MakeText(this, "Toast within progress dialog.", ToastLength.Long).Show();
+                mProgressDialog.Hide();
+
+                showItemInputDlg(dboperations.insert_from_src, item);
                 Console.WriteLine("UI thread execution :)");
             });
         }
@@ -358,6 +364,15 @@ namespace buylist
             input_dialog.Show(transaction, "dialog_fragment");
             input_dialog.mOnShopItemAdded += onSaveShopItemdata;
             input_dialog.mOnError += OnErrorHandler;
+            input_dialog.mOnDismissEvt += OnDlgDismiss;
+        }
+
+        private void OnDlgDismiss(object sender, OnDismissListener e)
+        {
+            if( e.operate == dboperations.insert_from_src )
+            {
+                this.Finish();
+            }
         }
 
         private void showBudgetDialog()
@@ -386,12 +401,12 @@ namespace buylist
         private void onSaveShopItemdata(object sender, OnShopItemSaveEvtArgs e)
         {
             bool result = false;
-
             //create the db helper class
             var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath,this);
             switch( e.operate )
             {
-                case dboperations.insert_table:
+                case dboperations.insert_from_src:
+                case dboperations.insert_manually:
                     ShopItem item_info1 = new ShopItem
                     {
                         ItemBrief = e.item_brief,
@@ -416,6 +431,7 @@ namespace buylist
             
             var records = dbhelper.get_total_records();
             Console.WriteLine("DB Update :" + result + " Number of records : ", records);
+
             dbupdateUI();
         }
         //------------------------------------------------------------------------//

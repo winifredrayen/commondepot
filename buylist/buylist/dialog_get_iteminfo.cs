@@ -14,6 +14,19 @@ using SQLite;
 
 namespace buylist
 {
+    public class OnDismissListener : EventArgs
+    {
+        private ExistingListActivity.dboperations onDismissEvtOperation;
+        public ExistingListActivity.dboperations operate
+        {
+            get { return onDismissEvtOperation; }
+            set { onDismissEvtOperation = value; }
+        }
+        public OnDismissListener(ExistingListActivity.dboperations opt)
+        {
+            operate = opt;
+        }
+    }
     public class OnShopItemError : EventArgs
     {
         private string mErrorMsg;
@@ -29,7 +42,7 @@ namespace buylist
     }
     public class OnShopItemSaveEvtArgs : EventArgs
     {
-        private ExistingListActivity.dboperations m_operation;
+        private ExistingListActivity.dboperations onshopItemEvt_operation;
         private string mItem_Brief;
         private double mItem_Cost;
         private double mItem_Priority;
@@ -38,8 +51,8 @@ namespace buylist
 
         public ExistingListActivity.dboperations operate
         {
-            get { return m_operation; }
-            set { m_operation = value; }
+            get { return onshopItemEvt_operation; }
+            set { onshopItemEvt_operation = value; }
         }
         public int ID
         {
@@ -103,6 +116,7 @@ namespace buylist
 
         public event EventHandler<OnShopItemSaveEvtArgs> mOnShopItemAdded;
         public event EventHandler<OnShopItemError> mOnError;
+        public event EventHandler<OnDismissListener> mOnDismissEvt;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -123,7 +137,11 @@ namespace buylist
 
             return view; 
         }
-
+        public override void OnDismiss(IDialogInterface dialog)
+        {
+            base.OnDismiss(dialog);
+            mOnDismissEvt.Invoke(this, new OnDismissListener(mOperation));
+        }
         private void setitemcontent()
         {
             //initialize with the existing values if available
