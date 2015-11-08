@@ -6,19 +6,26 @@ using System.Text;
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System.Threading;
 using Android.Preferences;
 using System.Collections.ObjectModel;
-using System.IO;
+using System.Text.RegularExpressions;
+using System.Net;
+using HtmlAgilityPack;
+
 
 namespace buylist
 {
 
     [Activity(Label = "Shopping list options")]
-
+    [IntentFilter(new[] { Intent.ActionSend }, 
+        Categories = new[] {
+            Intent.CategoryDefault,
+            Intent.CategoryBrowsable
+        },
+    DataMimeType = "text/plain")]
     public class ExistingListActivity : Activity
     {
         private ListView mListview;
@@ -35,6 +42,11 @@ namespace buylist
             delete_selected_items,
             delete_all_items
         }
+        public enum dboperations
+        {
+            update_table,
+            insert_table
+        }
         protected override void OnResume()
         {
             base.OnResume();
@@ -46,6 +58,14 @@ namespace buylist
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.existinglistview);
+
+            string text = Intent.GetStringExtra(Intent.ExtraText);
+            string subject = Intent.GetStringExtra(Intent.ExtraSubject);
+            string html = Intent.GetStringExtra(Intent.ExtraHtmlText);
+            Console.WriteLine("text:{0},subject:{1}", text, subject);
+
+
+            if( text != null ) do_url_processing(text);
 
             m_adapter = new ListViewAdapter(this, mItemList);
             mListview = FindViewById<ListView>(Resource.Id.existinglist);
@@ -63,7 +83,7 @@ namespace buylist
             //quick dialog boxes
             mAddItem.Click += (object sender, EventArgs e) =>
             {
-                showItemInputDlg();
+                showItemInputDlg(dboperations.insert_table);
             };
 
             mSaveBudget.Click += delegate
@@ -96,6 +116,144 @@ namespace buylist
                 }
             };
         }
+        private List<string> findPrice(string url,HtmlDocument doc)
+        {
+            List<string> cost_collection = new List<string>();
+
+            if ( url.Contains("amazon.com"))
+            {
+                var trnodes = doc.DocumentNode.Descendants("tr")
+                    .Where(nd => nd.Id == "priceblock_dealprice_row" ||
+                    nd.Id == "priceblock_ourprice_row" ||
+                    nd.InnerText.Contains("price"));
+
+                foreach (var tnode in trnodes )
+                {
+                    string target_string = tnode.InnerText;
+                    foreach (Match m in Regex.Matches(target_string, @"\$\d*\.?,?\d*"))
+                    {
+                        //Console.WriteLine("PRICE:" + m.ToString());
+                        cost_collection.Add(m.ToString());
+                    }
+                }
+            }
+            else
+            {
+                Regex linkParser = new Regex(@"/\s*\$\s*\d+.*\d/", RegexOptions.Compiled);
+                foreach (HtmlNode tnode in doc.DocumentNode.Descendants().Where(n => n.Id.Contains("price") ||
+                   n.GetAttributeValue("class", "").Contains("price") ||
+                   n.Attributes.Contains("price")))
+                {
+                    string target_string = tnode.InnerText;
+
+                    foreach (Match m in Regex.Matches(target_string, @"\$\d*\.?,?\d*"))
+                    {
+                        //Console.WriteLine("PRICE:" + m.ToString());
+                        cost_collection.Add(m.ToString());
+                    }
+                }
+            }
+            return cost_collection;
+        }
+        private void do_url_processing(string rawString)
+        {
+            string url_match = "";
+            Regex linkParser = new Regex(@"\b(?:https?://)\S+\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            foreach (Match m in linkParser.Matches(rawString))
+            {
+                Console.WriteLine("URL : {0}", m);
+                url_match = m.ToString();
+            }
+            WebClient webClient = new WebClient();
+
+            var url = new Uri(url_match); // Html home page
+            webClient.Encoding = Encoding.UTF8;
+            webClient.DownloadStringAsync(url);
+
+            webClient.DownloadStringCompleted += (s, e)  =>
+            {
+                var text = e.Result; // get the downloaded text
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(text);
+
+                double minvalue = double.PositiveInfinity;
+                ShopItem temp_item = new ShopItem();
+
+                var all_prices = findPrice(url_match, doc);
+                int maxcount = all_prices.Count > 2 ? 2 : all_prices.Count;
+
+                for (int i = 0; i < maxcount; i++)
+                {
+                    Console.WriteLine("PRICE:" + all_prices[i]);
+                    string tp = all_prices[i].Replace("$", "");
+                    if( !string.IsNullOrEmpty(tp) )
+                    {
+                        double temp = Double.Parse(tp.ToString());
+                        if (minvalue > temp)
+                        {
+                            minvalue = temp;
+                        }
+                    }
+                }
+                if( !double.IsInfinity(minvalue))
+                    temp_item.ItemCost = minvalue;
+                else
+                    temp_item.ItemCost = 0;
+
+                foreach (var node in doc.DocumentNode.Descendants("meta"))
+                {
+                    if (node != null &&
+                    node.Attributes["name"] != null &&
+                    node.Attributes["name"].Value == "description")
+                    {
+                        HtmlAttribute desc;
+                        desc = node.Attributes["content"];
+                        string fulldescription = desc.Value;
+                        temp_item.ItemDescription = fulldescription;
+                        Console.WriteLine("DESCRIPTION:{0}", fulldescription.ToString());
+                    }
+                    if (node != null &&
+                    node.Attributes["name"] != null &&
+                    node.Attributes["name"].Value == "title")
+                    {
+                        HtmlAttribute desc;
+                        desc = node.Attributes["content"];
+                        string title = desc.Value;
+                        Console.WriteLine("TITLE:{0}", title.ToString());
+                        temp_item.ItemBrief = title;
+                    }
+                    else if (node != null &&
+                        node.Attributes["property"] != null &&
+                        node.Attributes["property"].Value.Contains("title"))
+                    {
+                        HtmlAttribute desc;
+                        desc = node.Attributes["content"];
+                        string title = desc.Value;
+                        Console.WriteLine("TITLE:{0}", title.ToString());
+                        temp_item.ItemBrief = title;
+                    }
+                }
+                temp_item.ItemPriority = 2.5; //average
+
+                if (null == temp_item.ItemBrief)
+                {
+                    temp_item.ItemBrief = temp_item.ItemDescription;
+                    temp_item.ItemDescription = "";
+                }
+
+                ThreadPool.QueueUserWorkItem(o => SlowMethod(temp_item));
+            };
+        }
+
+        private void SlowMethod(ShopItem item)
+        {
+            RunOnUiThread(() =>
+            {
+                showItemInputDlg(dboperations.insert_table,item);
+                Console.WriteLine("UI thread execution :)");
+            });
+        }
+
         //------------------------------------------------------------------------//
         //Convenience : give a long item click for deleting each item
         private void onLongItemClick(object sender, AdapterView.ItemLongClickEventArgs e)
@@ -188,12 +346,14 @@ namespace buylist
         }
         //------------------------------------------------------------------------//
         //Dialog options - TBD common interface
-        private void showItemInputDlg(ShopItem item = null)
+        private void showItemInputDlg(dboperations opt, ShopItem item = null)
         {
             //Pull up input dialog
             FragmentTransaction transaction = FragmentManager.BeginTransaction();
             dialog_getitem_info input_dialog = new dialog_getitem_info();
-            if(item != null){ input_dialog.this_shopitem = item; }
+
+            input_dialog.this_shopitem = item;
+            input_dialog.this_operation = opt;
 
             input_dialog.Show(transaction, "dialog_fragment");
             input_dialog.mOnShopItemAdded += onSaveShopItemdata;
@@ -225,31 +385,33 @@ namespace buylist
 
         private void onSaveShopItemdata(object sender, OnShopItemSaveEvtArgs e)
         {
-            bool result;
+            bool result = false;
 
             //create the db helper class
             var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath,this);
-            if( e.updatetable ) {
-                ShopItem item_info = new ShopItem
-                {
-                    ID = e.ID,
-                    ItemBrief = e.item_brief,
-                    ItemCost = e.item_Cost,
-                    ItemDescription = e.item_description,
-                    ItemPriority = e.item_priority
-                };
-                result = dbhelper.update_data(item_info);
-            }
-            else
+            switch( e.operate )
             {
-                ShopItem item_info = new ShopItem
-                {
-                    ItemBrief = e.item_brief,
-                    ItemCost = e.item_Cost,
-                    ItemDescription = e.item_description,
-                    ItemPriority = e.item_priority
-                };
-                result = dbhelper.insert_update_data(item_info);
+                case dboperations.insert_table:
+                    ShopItem item_info1 = new ShopItem
+                    {
+                        ItemBrief = e.item_brief,
+                        ItemCost = e.item_Cost,
+                        ItemDescription = e.item_description,
+                        ItemPriority = e.item_priority
+                    };
+                    result = dbhelper.insert_update_data(item_info1);
+                    break;
+                case dboperations.update_table:
+                    ShopItem item_info2 = new ShopItem
+                    {
+                        ID = e.ID,
+                        ItemBrief = e.item_brief,
+                        ItemCost = e.item_Cost,
+                        ItemDescription = e.item_description,
+                        ItemPriority = e.item_priority
+                    };
+                    result = dbhelper.update_data(item_info2);
+                    break;
             }
             
             var records = dbhelper.get_total_records();
@@ -348,7 +510,7 @@ namespace buylist
         private void OnListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             Console.WriteLine("Item clicked priority:{0}", mItemList[e.Position].ItemPriority);
-            showItemInputDlg(mItemList[e.Position]);
+            showItemInputDlg(dboperations.update_table, mItemList[e.Position]);
         }
         //------------------------------------------------------------------------//
     }

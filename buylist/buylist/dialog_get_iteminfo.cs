@@ -29,17 +29,17 @@ namespace buylist
     }
     public class OnShopItemSaveEvtArgs : EventArgs
     {
-        private bool m_updatetable;
+        private ExistingListActivity.dboperations m_operation;
         private string mItem_Brief;
         private double mItem_Cost;
         private double mItem_Priority;
         private string mItem_Desc;
         private int m_ID;
 
-        public bool updatetable
+        public ExistingListActivity.dboperations operate
         {
-            get { return m_updatetable; }
-            set { m_updatetable = value; }
+            get { return m_operation; }
+            set { m_operation = value; }
         }
         public int ID
         {
@@ -66,26 +66,35 @@ namespace buylist
             get { return mItem_Priority; }
             set { mItem_Priority = value; }
         }
-        public OnShopItemSaveEvtArgs(string _brief, string _desc, double _priority, double _cost, bool _updatetable, int _ID = 0) : base()
+        public OnShopItemSaveEvtArgs(string _brief, 
+            string _desc, double _priority, double _cost,
+            ExistingListActivity.dboperations _operation, int _ID = 0) : base()
         {
             ID = _ID;
             item_brief = _brief;
             item_Cost = _cost;
             item_priority = _priority;
             item_description = _desc;
-            updatetable = _updatetable;
+            operate = _operation;
         }
     }
     public class dialog_getitem_info : DialogFragment
     {
         //UI fill-data
         private ShopItem mShopItem;
-
+        private ExistingListActivity.dboperations mOperation;
         public ShopItem this_shopitem
         {
             get { return mShopItem; }
             set { mShopItem = value; }
         }
+
+        public ExistingListActivity.dboperations this_operation
+        {
+            get { return mOperation; }
+            set { mOperation = value; }
+        }
+
         //UI elements
         private EditText mitem_cost;
         private EditText mitem_brief;
@@ -108,7 +117,10 @@ namespace buylist
             Button savebtn = view.FindViewById<Button>(Resource.Id.savebtn);
             //user has clicked the save button
             savebtn.Click += btn_onSaveShopItems;
-            if(mShopItem != null) setitemcontent();
+
+            if(mShopItem != null)
+                setitemcontent();
+
             return view; 
         }
 
@@ -119,6 +131,7 @@ namespace buylist
             mitem_cost.Text = mShopItem.ItemCost.ToString();
             mitem_description.Text = mShopItem.ItemDescription;
             mitem_priority.Rating = (float)mShopItem.ItemPriority;
+
             //Console.WriteLine("What was the previously set priority? :{0}", mShopItem.ItemPriority);
         }
 
@@ -140,7 +153,7 @@ namespace buylist
 
                 //make an event and broadcast it. --> mOnShopItemAdded
                 mOnShopItemAdded.Invoke(this, new OnShopItemSaveEvtArgs(mitem_brief.Text, mitem_description.Text,
-                    priorityvalue, costvalue,(mShopItem != null), (mShopItem != null) ? mShopItem.ID : 0));
+                    priorityvalue, costvalue, mOperation , (mShopItem != null) ? mShopItem.ID : 0));
 
                 this.Dismiss();
             }

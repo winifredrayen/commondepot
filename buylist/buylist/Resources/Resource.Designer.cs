@@ -86,7 +86,10 @@ namespace buylist
 			public const int Icon = 2130837504;
 			
 			// aapt resource value: 0x7f020001
-			public const int shape_rounded_bluegray = 2130837505;
+			public const int monoandroidsplash = 2130837505;
+			
+			// aapt resource value: 0x7f020002
+			public const int shape_rounded_bluegray = 2130837506;
 			
 			static Drawable()
 			{
@@ -302,6 +305,9 @@ namespace buylist
 		
 		public partial class Style
 		{
+			
+			// aapt resource value: 0x7f070001
+			public const int Mono_Android_Theme_Splash = 2131165185;
 			
 			// aapt resource value: 0x7f070000
 			public const int dialog_animation = 2131165184;
