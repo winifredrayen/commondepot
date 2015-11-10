@@ -9,7 +9,7 @@ using Android.Preferences;
 
 namespace buylist
 {
-    [Activity(Label = "Welcome to Shop off", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "Shop off", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity
     {
         protected override void OnCreate(Bundle bundle)

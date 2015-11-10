@@ -33,6 +33,7 @@ namespace buylist
         ListViewAdapter m_adapter;
         private Dictionary<int,bool> m_queue_for_deletion = new Dictionary<int, bool>();
         private ObservableCollection<ShopItem> mItemList = new ObservableCollection<ShopItem>();
+        ObservableCollection<ShopItem> mfiltered_list = new ObservableCollection<ShopItem>();
         private ProgressDialog mProgressDialog;
         private LinearLayout mContainer;
         private EditText mSearch;
@@ -91,17 +92,17 @@ namespace buylist
 
         private void mSearch_TextChanged(object sender, Android.Text.TextChangedEventArgs e)
         {
+            mfiltered_list.Clear();
             //mListview.SetFilterText(mSearch.Text.ToString());
             List<ShopItem> searchedItems = (from item in mItemList
                                            where item.ItemBrief.Contains(mSearch.Text,StringComparison.OrdinalIgnoreCase) ||
                                            item.ItemDescription.Contains(mSearch.Text,StringComparison.OrdinalIgnoreCase) select item).ToList<ShopItem>();
 
-            ObservableCollection<ShopItem> filtered_list = new ObservableCollection<ShopItem>();
             foreach(var filtereditem in searchedItems)
             {
-                filtered_list.Add(filtereditem);
+                mfiltered_list.Add(filtereditem);
             }
-            m_adapter = new ListViewAdapter(this, filtered_list, m_queue_for_deletion);
+            m_adapter = new ListViewAdapter(this, mfiltered_list, m_queue_for_deletion);
             m_adapter.mOnItemCheck -= OnCheckItemClick;
             m_adapter.mOnItemCheck += OnCheckItemClick;
 
@@ -279,7 +280,14 @@ namespace buylist
         //Convenience : give a long item click for deleting each item
         private void onLongItemClick(object sender, AdapterView.ItemLongClickEventArgs e)
         {
-            delete_item(deleteoptions.delete_this_item, mItemList[e.Position].ID);
+            if (mfiltered_list.Count > 0)
+            {
+                delete_item(deleteoptions.delete_this_item, mfiltered_list[e.Position].ID);
+            }
+            else
+            {
+                delete_item(deleteoptions.delete_this_item, mItemList[e.Position].ID);
+            }
         }
         //------------------------------------------------------------------------//
         //bundled all the delete options together
@@ -631,8 +639,16 @@ namespace buylist
 
         private void OnListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            Console.WriteLine("Item clicked priority:{0}", mItemList[e.Position].ItemPriority);
-            showItemInputDlg(dboperations.update_table, mItemList[e.Position]);
+            if(mfiltered_list.Count > 0)
+            {
+                Console.WriteLine("Item clicked priority:{0}", mfiltered_list[e.Position].ItemPriority);
+                showItemInputDlg(dboperations.update_table, mfiltered_list[e.Position]);
+            }
+            else
+            {
+                Console.WriteLine("Item clicked priority:{0}", mItemList[e.Position].ItemPriority);
+                showItemInputDlg(dboperations.update_table, mItemList[e.Position]);
+            }
         }
         //------------------------------------------------------------------------//
     }
