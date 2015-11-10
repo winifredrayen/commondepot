@@ -17,5 +17,7 @@
     <string name="delete_all_items">Delete all items</string>
     <string name="helpsetting">About</string>
     <string name="clear">Clear all items</string>
-    
+    <string name="add_items">Add Shopping Item</string>
+
 </resources>
+

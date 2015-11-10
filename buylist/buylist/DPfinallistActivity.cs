@@ -51,7 +51,7 @@ namespace buylist
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.dpoutput);
 
-            m_adapter = new ListViewAdapter(this, m_sortedlist);
+            m_adapter = new ListViewAdapter(this, m_sortedlist,null);
             mListview = FindViewById<ListView>(Resource.Id.finallist);
             m_adapter.mOnItemCheck += onItemCheck;
             mListview.Adapter = m_adapter;

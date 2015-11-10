@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="1dp"
+    android:background="#FAFAFA"
+    android:weightSum="100">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="88"
+        android:orientation="vertical"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp">
+        <TextView
+            android:text="Item Title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtTitle"
+            android:textColor="#000"
+            android:gravity="center_vertical"
+            android:padding="2dp"
+            android:textSize="18sp" />
+        <TextView
+            android:text="Item Cost"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtCost"
+            android:textColor="#000"
+            android:gravity="center_vertical"
+            android:padding="2dp"
+            android:textSize="16sp" />
+        <TextView
+            android:text="Item Description"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtDescription"
+            android:textColor="#000"
+            android:gravity="center_vertical"
+            android:padding="2dp"
+            android:textSize="14sp"
+            android:singleLine="true" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="12"
+        android:orientation="vertical"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:paddingRight="5dp">
+        <TextView
+            android:text="date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtDate"
+            android:gravity="center_horizontal"
+            android:paddingTop="5dp" />
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/cbxStart"
+            android:focusable="false"
+            android:button="@drawable/apptheme_btn_check_holo_light" />
+    </LinearLayout>
+</LinearLayout>

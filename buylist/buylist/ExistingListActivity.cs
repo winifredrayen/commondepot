@@ -14,7 +14,8 @@ using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using System.Net;
 using HtmlAgilityPack;
-
+using Android.Views.InputMethods;
+using System.Linq;
 
 namespace buylist
 {
@@ -33,9 +34,14 @@ namespace buylist
         private Button mSaveBudget;
         private Button mShowBuylist;
         ListViewAdapter m_adapter;
-        private List<int> m_queue_for_deletion = new List<int>();
+        private Dictionary<int,bool> m_queue_for_deletion = new Dictionary<int, bool>();
         private ObservableCollection<ShopItem> mItemList = new ObservableCollection<ShopItem>();
         private ProgressDialog mProgressDialog;
+        private LinearLayout mContainer;
+        private EditText mSearch;
+        private bool mAnimatedDown;
+        private bool misAnimating;
+
         private enum deleteoptions
         {
             delete_this_item,
@@ -68,18 +74,24 @@ namespace buylist
 
             if( text != null ) do_url_processing(text);
 
-            m_adapter = new ListViewAdapter(this, mItemList);
+            m_adapter = new ListViewAdapter(this, mItemList,m_queue_for_deletion);
             mListview = FindViewById<ListView>(Resource.Id.existinglist);
             m_adapter.mOnItemCheck += OnCheckItemClick;
             mListview.Adapter = m_adapter;
             mListview.ItemClick += OnListViewItemClick;
             mListview.ItemLongClick += onLongItemClick;
+            mListview.TextFilterEnabled = true;
 
             dbupdateUI();
 
             mAddItem = FindViewById<Button>(Resource.Id.additem);
             mSaveBudget = FindViewById<Button>(Resource.Id.getbudget);
             mShowBuylist = FindViewById<Button>(Resource.Id.whattobuy);
+            /**Search bar implementation **/
+            mSearch = FindViewById<EditText>(Resource.Id.etSearch);
+            mContainer = FindViewById<LinearLayout>(Resource.Id.llcontainer);
+            mSearch.Alpha = 0;
+            mSearch.TextChanged += mSearch_TextChanged;
 
             //quick dialog boxes
             mAddItem.Click += (object sender, EventArgs e) =>
@@ -117,6 +129,26 @@ namespace buylist
                 }
             };
         }
+
+        private void mSearch_TextChanged(object sender, Android.Text.TextChangedEventArgs e)
+        {
+            //mListview.SetFilterText(mSearch.Text.ToString());
+            List<ShopItem> searchedItems = (from item in mItemList
+                                           where item.ItemBrief.Contains(mSearch.Text,StringComparison.OrdinalIgnoreCase) ||
+                                           item.ItemDescription.Contains(mSearch.Text,StringComparison.OrdinalIgnoreCase) select item).ToList<ShopItem>();
+
+            ObservableCollection<ShopItem> filtered_list = new ObservableCollection<ShopItem>();
+            foreach(var filtereditem in searchedItems)
+            {
+                filtered_list.Add(filtereditem);
+            }
+            m_adapter = new ListViewAdapter(this, filtered_list, m_queue_for_deletion);
+            m_adapter.mOnItemCheck -= OnCheckItemClick;
+            m_adapter.mOnItemCheck += OnCheckItemClick;
+
+            mListview.Adapter = m_adapter;
+        }
+
         private List<string> findPrice(string url,HtmlDocument doc)
         {
             List<string> cost_collection = new List<string>();
@@ -311,7 +343,11 @@ namespace buylist
                             Toast.MakeText(this, "No items were selected", ToastLength.Long).Show();
                             return;
                         }
-                        ids_to_delete = m_queue_for_deletion;
+                        foreach(var kvc in m_queue_for_deletion)
+                        {
+                            if( kvc.Value == true)
+                                ids_to_delete.Add(kvc.Key);
+                        }
                         break;
                     case deleteoptions.delete_all_items:
                         represent_items = " all your items ";
@@ -326,6 +362,9 @@ namespace buylist
                     default:
                         break;
                 }
+
+                m_queue_for_deletion.Clear();
+
                 var builder = new AlertDialog.Builder(this)
                     .SetTitle("Action Required")
                     .SetMessage("Do you want to remove" + represent_items + "from the list?")
@@ -356,6 +395,7 @@ namespace buylist
                     {
                         dbhelper.delete_rows(item_id);
                     }
+
                     dbupdateUI();
                     dialog.Dismiss();
                 };
@@ -473,7 +513,7 @@ namespace buylist
         //------------------------------------------------------------------------//
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
-            MenuInflater.Inflate(Resource.Menu.options, menu);
+            MenuInflater.Inflate(Resource.Menu.actionbar, menu);
             return base.OnCreateOptionsMenu(menu);
         }
         //------------------------------------------------------------------------//
@@ -481,6 +521,36 @@ namespace buylist
         {
             switch (item.ItemId)
             {
+                case Resource.Id.search:
+                    //Search icon has been clicked
+                    if(misAnimating)
+                    {
+                        //if it is animating then exit.
+                        return true;
+                    }
+                    if(!mAnimatedDown)
+                    {
+                        //List view is up
+                        MyAnimation anim = new MyAnimation(mListview, mListview.Height - mSearch.Height);
+                        anim.Duration = 500;
+                        mListview.StartAnimation(anim);
+                        anim.AnimationStart += animationStartDown;
+                        anim.AnimationEnd += animationEndDown;
+                        mContainer.Animate().TranslationYBy(mSearch.Height).SetDuration(500).Start();
+                    }
+                    else
+                    {
+                        //Listview is down
+                        MyAnimation anim = new MyAnimation(mListview, mListview.Height + mSearch.Height);
+                        anim.Duration = 500;
+                        mListview.StartAnimation(anim);
+                        anim.AnimationStart += animationStartUp;
+                        anim.AnimationEnd += animationEndUp;
+                        mContainer.Animate().TranslationYBy(-mSearch.Height).SetDuration(500).Start();
+                    }
+                    //toggle value
+                    mAnimatedDown = !mAnimatedDown;
+                    return true;
                 case Resource.Id.delete_items:
                     //delete_selected_items();
                     delete_item(deleteoptions.delete_selected_items, 0);
@@ -505,22 +575,38 @@ namespace buylist
                     return base.OnOptionsItemSelected(item);
             }
         }
+
+        private void animationEndDown(object sender, Android.Views.Animations.Animation.AnimationEndEventArgs e)
+        {
+            misAnimating = false; //animation lock
+        }
+        private void animationEndUp(object sender, Android.Views.Animations.Animation.AnimationEndEventArgs e)
+        {
+            misAnimating = false; //animation lock
+            mSearch.Text = string.Empty;
+            mSearch.ClearFocus();
+            InputMethodManager inputManager = (InputMethodManager)this.GetSystemService(Context.InputMethodService);
+            inputManager.HideSoftInputFromWindow(this.CurrentFocus.WindowToken, HideSoftInputFlags.NotAlways);
+        }
+
+        private void animationStartDown(object sender, Android.Views.Animations.Animation.AnimationStartEventArgs e)
+        {
+            misAnimating = true; //animation lock
+            mSearch.Animate().AlphaBy(1.0f).SetDuration(500).Start();
+        }
+
+        private void animationStartUp(object sender, Android.Views.Animations.Animation.AnimationStartEventArgs e)
+        {
+            misAnimating = true; //animation lock
+            mSearch.Animate().AlphaBy(-1.0f).SetDuration(300).Start();
+        }
+
         //------------------------------------------------------------------------//
         //Based on checked state of the item, we add the items to the pending queue
         private void OnCheckItemClick(object sender, onItemChecked e)
         {
-            if( m_queue_for_deletion == null )
-            {
-                m_queue_for_deletion = new List<int>();
-            }
-            if ( e.checkedvalue )
-            {
-                m_queue_for_deletion.Add(e.ID);
-            }
-            else
-            {
-                m_queue_for_deletion.Remove(e.ID);
-            }
+            if( m_queue_for_deletion == null ) return;
+            m_queue_for_deletion[e.ID] = e.checkedvalue;
         }
         //------------------------------------------------------------------------//
         //UI operation: we need to find a neat way, as to do this operation async and tie this with UI thread later on
@@ -550,7 +636,6 @@ namespace buylist
                     mItemList.Add(shopping_item);
                 }
             }
-            m_queue_for_deletion.Clear();
             m_adapter.NotifyDataSetChanged();
         }
 

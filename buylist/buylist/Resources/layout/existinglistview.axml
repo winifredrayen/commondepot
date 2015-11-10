@@ -1,40 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_height="wrap_content"
+        android:id="@+id/llcontainer"
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:gravity="center_horizontal"
-        android:layout_gravity="center_horizontal"
-        android:showDividers="middle"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp">
-        <Button
-            android:text="Add Items"
-            android:layout_width="wrap_content"
+        android:layout_height="fill_parent">
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_height="wrap_content"
-            android:id="@+id/additem"
-            android:layout_centerHorizontal="true" />
-        <Button
-            android:layout_width="wrap_content"
-            android:text="Set Budget"
-            android:layout_height="wrap_content"
-            android:id="@+id/getbudget"
-            android:layout_centerHorizontal="true" />
-        <Button
-            android:layout_width="wrap_content"
-            android:text="What to buy?"
-            android:layout_height="wrap_content"
-            android:id="@+id/whattobuy"
-            android:layout_centerHorizontal="true" />
+            android:layout_width="fill_parent"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:showDividers="middle"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp">
+            <Button
+                android:text="Add Items"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/additem"
+                android:layout_centerHorizontal="true" />
+            <Button
+                android:layout_width="wrap_content"
+                android:text="Set Budget"
+                android:layout_height="wrap_content"
+                android:id="@+id/getbudget"
+                android:layout_centerHorizontal="true" />
+            <Button
+                android:layout_width="wrap_content"
+                android:text="What to buy?"
+                android:layout_height="wrap_content"
+                android:id="@+id/whattobuy"
+                android:layout_centerHorizontal="true" />
+        </LinearLayout>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/existinglist"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp" />
     </LinearLayout>
-    <ListView
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/existinglist"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="5dp" />
-</LinearLayout>
+        android:background="@drawable/edit_text_style"
+        android:hint="Search List"
+        android:textColor="#000" />
+</FrameLayout>

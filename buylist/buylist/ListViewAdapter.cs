@@ -36,7 +36,7 @@ namespace buylist
             get { return m_checked; }
             set { m_checked = value; }
         }
-        public onItemChecked(int in_ID,bool isChecked)
+        public onItemChecked(int in_ID, bool isChecked)
         {
             m_ID = in_ID;
             m_checked = isChecked;
@@ -44,16 +44,26 @@ namespace buylist
     }
     class ListViewAdapter : BaseAdapter<ShopItem>
     {
-        private ObservableCollection<ShopItem> mItemList = new ObservableCollection<ShopItem>();
         private Context mContext;
+        Dictionary<int, bool> check_position;
+        private ObservableCollection<ShopItem> mItemList;
 
         private List<DataSetObserver> mObservers;
         public event EventHandler<onItemChecked> mOnItemCheck;
 
-        public ListViewAdapter(Context context, ObservableCollection<ShopItem> items)
+        public ListViewAdapter(Context context, ObservableCollection<ShopItem> items, Dictionary<int, bool> markeditems)
         {
             mContext = context;
             mItemList = items;
+            if( markeditems != null )
+            {
+                check_position = markeditems;
+            }
+            else
+            {
+                check_position = new Dictionary<int, bool>();
+            }
+            
             mObservers = new List<DataSetObserver>();
         }
         public override int Count
@@ -66,28 +76,38 @@ namespace buylist
         }
         public override ShopItem this[int position]
         {
-            get{ return mItemList[position]; }
+            get { return mItemList[position]; }
         }
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             //reuse if available
             View row = convertView;
-            if( row == null )
+            if (row == null)
             {
                 //if not create one
-                row = LayoutInflater.From(mContext).Inflate(Resource.Layout.listview_row, null, false);
+                row = LayoutInflater.From(mContext).Inflate(Resource.Layout.row, null, false);
             }
             //Android.Graphics.Color bgcolor = getRowColor(mItemList[position].ItemPriority);
 
-            TextView tview = row.FindViewById<TextView>(Resource.Id.textitem);
-            TextView itemcost = row.FindViewById<TextView>(Resource.Id.itemcost);
-            CheckBox chckbox = row.FindViewById<CheckBox>(Resource.Id.itemcheck);
+            TextView tview = row.FindViewById<TextView>(Resource.Id.txtTitle);
+            TextView itemcost = row.FindViewById<TextView>(Resource.Id.txtCost);
+            TextView dview = row.FindViewById<TextView>(Resource.Id.txtDescription);
+            CheckBox chckbox = row.FindViewById<CheckBox>(Resource.Id.cbxStart);
 
             tview.Text = mItemList[position].ItemBrief;
             itemcost.Text = mItemList[position].ItemCost.ToString();
+            dview.Text = mItemList[position].ItemDescription.ToString();
 
-            chckbox.Checked = false;
-            chckbox.Tag = mItemList[position].ID.ToString();
+            chckbox.Tag = position;
+
+            if (check_position.ContainsKey(mItemList[position].ID))
+            {
+                chckbox.Checked = check_position[mItemList[position].ID];
+            }
+            else
+            {
+                chckbox.Checked = false;
+            }
 
             //fix for accumulating event handlers for every getview 
             chckbox.CheckedChange -= onCheckItem;
@@ -97,9 +117,12 @@ namespace buylist
         }
         private void onCheckItem(object sender, CompoundButton.CheckedChangeEventArgs e)
         {
-            CheckBox cbox = (CheckBox)sender;
-            Console.WriteLine("Checked/Unchecked!!" + Int32.Parse(cbox.Tag.ToString()));
-            mOnItemCheck.Invoke(this, new onItemChecked(Int32.Parse(cbox.Tag.ToString()), e.IsChecked));
+            CheckBox chckbox = sender as CheckBox;
+            check_position[mItemList[Int32.Parse(chckbox.Tag.ToString())].ID] = e.IsChecked;
+
+            Console.WriteLine("Checked/Unchecked!!" + mItemList[Int32.Parse(chckbox.Tag.ToString())].ID);
+            mOnItemCheck.Invoke(this,
+                new onItemChecked(mItemList[Int32.Parse(chckbox.Tag.ToString())].ID, e.IsChecked));
         }
 
         public override void RegisterDataSetObserver(DataSetObserver observer)
@@ -110,7 +133,8 @@ namespace buylist
         public override void NotifyDataSetChanged()
         {
            base.NotifyDataSetChanged();
-           foreach( DataSetObserver observer in mObservers )
+           check_position.Clear();
+           foreach ( DataSetObserver observer in mObservers )
            {
                observer.OnChanged();
            }
