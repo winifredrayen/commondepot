@@ -170,90 +170,90 @@ namespace buylist
                 var url = new Uri(url_match); // Html home page
                 webClient.Encoding = Encoding.UTF8;
                 webClient.DownloadStringAsync(url);
+
+                webClient.DownloadStringCompleted += (s, e) =>
+                {
+                    var text = e.Result; // get the downloaded text
+                    HtmlDocument doc = new HtmlDocument();
+                    try
+                    {
+                        doc.LoadHtml(text);
+                        double minvalue = double.PositiveInfinity;
+                        ShopItem temp_item = new ShopItem();
+
+                        var all_prices = findPrice(url_match, doc);
+                        int maxcount = all_prices.Count > 2 ? 2 : all_prices.Count;
+
+                        for (int i = 0; i < maxcount; i++)
+                        {
+                            Console.WriteLine("PRICE:" + all_prices[i]);
+                            string tp = all_prices[i].Replace("$", "");
+                            if (!string.IsNullOrEmpty(tp))
+                            {
+                                double temp = Double.Parse(tp.ToString());
+                                if (minvalue > temp)
+                                {
+                                    minvalue = temp;
+                                }
+                            }
+                        }
+                        if (!double.IsInfinity(minvalue))
+                            temp_item.ItemCost = minvalue;
+                        else
+                            temp_item.ItemCost = 0;
+
+                        foreach (var node in doc.DocumentNode.Descendants("meta"))
+                        {
+                            if (node != null &&
+                            node.Attributes["name"] != null &&
+                            node.Attributes["name"].Value == "description")
+                            {
+                                HtmlAttribute desc;
+                                desc = node.Attributes["content"];
+                                string fulldescription = desc.Value;
+                                temp_item.ItemDescription = fulldescription;
+                                Console.WriteLine("DESCRIPTION:{0}", fulldescription.ToString());
+                            }
+                            if (node != null &&
+                            node.Attributes["name"] != null &&
+                            node.Attributes["name"].Value == "title")
+                            {
+                                HtmlAttribute desc;
+                                desc = node.Attributes["content"];
+                                string title = desc.Value;
+                                Console.WriteLine("TITLE:{0}", title.ToString());
+                                temp_item.ItemBrief = title;
+                            }
+                            else if (node != null &&
+                                node.Attributes["property"] != null &&
+                                node.Attributes["property"].Value.Contains("title"))
+                            {
+                                HtmlAttribute desc;
+                                desc = node.Attributes["content"];
+                                string title = desc.Value;
+                                Console.WriteLine("TITLE:{0}", title.ToString());
+                                temp_item.ItemBrief = title;
+                            }
+                        }
+                        temp_item.ItemPriority = 2.5; //average
+
+                    if (null == temp_item.ItemBrief)
+                        {
+                            temp_item.ItemBrief = temp_item.ItemDescription;
+                            temp_item.ItemDescription = "";
+                        }
+                        ThreadPool.QueueUserWorkItem(o => SlowMethod(temp_item));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("ExceptionHandled:{0}" + ex.Message);
+                    }
+                };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Crashed / ExceptionHandled:{0}" + ex.Message);
             }
-
-            webClient.DownloadStringCompleted += (s, e)  =>
-            {
-                var text = e.Result; // get the downloaded text
-                HtmlDocument doc = new HtmlDocument();
-                try
-                {
-                    doc.LoadHtml(text);
-                    double minvalue = double.PositiveInfinity;
-                    ShopItem temp_item = new ShopItem();
-
-                    var all_prices = findPrice(url_match, doc);
-                    int maxcount = all_prices.Count > 2 ? 2 : all_prices.Count;
-
-                    for (int i = 0; i < maxcount; i++)
-                    {
-                        Console.WriteLine("PRICE:" + all_prices[i]);
-                        string tp = all_prices[i].Replace("$", "");
-                        if (!string.IsNullOrEmpty(tp))
-                        {
-                            double temp = Double.Parse(tp.ToString());
-                            if (minvalue > temp)
-                            {
-                                minvalue = temp;
-                            }
-                        }
-                    }
-                    if (!double.IsInfinity(minvalue))
-                        temp_item.ItemCost = minvalue;
-                    else
-                        temp_item.ItemCost = 0;
-
-                    foreach (var node in doc.DocumentNode.Descendants("meta"))
-                    {
-                        if (node != null &&
-                        node.Attributes["name"] != null &&
-                        node.Attributes["name"].Value == "description")
-                        {
-                            HtmlAttribute desc;
-                            desc = node.Attributes["content"];
-                            string fulldescription = desc.Value;
-                            temp_item.ItemDescription = fulldescription;
-                            Console.WriteLine("DESCRIPTION:{0}", fulldescription.ToString());
-                        }
-                        if (node != null &&
-                        node.Attributes["name"] != null &&
-                        node.Attributes["name"].Value == "title")
-                        {
-                            HtmlAttribute desc;
-                            desc = node.Attributes["content"];
-                            string title = desc.Value;
-                            Console.WriteLine("TITLE:{0}", title.ToString());
-                            temp_item.ItemBrief = title;
-                        }
-                        else if (node != null &&
-                            node.Attributes["property"] != null &&
-                            node.Attributes["property"].Value.Contains("title"))
-                        {
-                            HtmlAttribute desc;
-                            desc = node.Attributes["content"];
-                            string title = desc.Value;
-                            Console.WriteLine("TITLE:{0}", title.ToString());
-                            temp_item.ItemBrief = title;
-                        }
-                    }
-                    temp_item.ItemPriority = 2.5; //average
-
-                    if (null == temp_item.ItemBrief)
-                    {
-                        temp_item.ItemBrief = temp_item.ItemDescription;
-                        temp_item.ItemDescription = "";
-                    }
-                    ThreadPool.QueueUserWorkItem(o => SlowMethod(temp_item));
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine("ExceptionHandled:{0}" + ex.Message);
-                }
-            };
         }
 
         private void SlowMethod(ShopItem item)
@@ -632,6 +632,14 @@ namespace buylist
                 foreach (var shopping_item in db_list)
                 {
                     mItemList.Add(shopping_item);
+                }
+            }
+            if( mfiltered_list.Count > 0 )
+            {
+                mfiltered_list.Clear();
+                foreach(var newitem in mItemList)
+                {
+                    mfiltered_list.Add(newitem);
                 }
             }
             m_adapter.NotifyDataSetChanged();
