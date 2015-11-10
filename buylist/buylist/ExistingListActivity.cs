@@ -30,9 +30,6 @@ namespace buylist
     public class ExistingListActivity : Activity
     {
         private ListView mListview;
-        private Button mAddItem;
-        private Button mSaveBudget;
-        private Button mShowBuylist;
         ListViewAdapter m_adapter;
         private Dictionary<int,bool> m_queue_for_deletion = new Dictionary<int, bool>();
         private ObservableCollection<ShopItem> mItemList = new ObservableCollection<ShopItem>();
@@ -84,50 +81,12 @@ namespace buylist
 
             dbupdateUI();
 
-            mAddItem = FindViewById<Button>(Resource.Id.additem);
-            mSaveBudget = FindViewById<Button>(Resource.Id.getbudget);
-            mShowBuylist = FindViewById<Button>(Resource.Id.whattobuy);
             /**Search bar implementation **/
             mSearch = FindViewById<EditText>(Resource.Id.etSearch);
             mContainer = FindViewById<LinearLayout>(Resource.Id.llcontainer);
             mSearch.Alpha = 0;
             mSearch.TextChanged += mSearch_TextChanged;
 
-            //quick dialog boxes
-            mAddItem.Click += (object sender, EventArgs e) =>
-            {
-                showItemInputDlg(dboperations.insert_manually);
-            };
-
-            mSaveBudget.Click += delegate
-            {
-                showBudgetDialog();
-            };
-            mShowBuylist.Click += delegate
-            {
-                if( 0 != get_budget() )
-                {
-                    //start this activity only if budget is already set
-                    StartActivity(typeof(DPfinallistActivity));
-                }
-                else
-                {
-                    var builder = new AlertDialog.Builder(this)
-                                   .SetTitle("Action Required")
-                                   .SetMessage("You need to set the monthly shopping-budget first!")
-                                   .SetPositiveButton("Ok", (EventHandler<DialogClickEventArgs>)null);
-
-                    var dialog = builder.Create();
-                    dialog.Show();
-
-                    // Get the buttons : inorder to dismiss the dialog from outside
-                    var yesBtn = dialog.GetButton((int)DialogButtonType.Positive);
-                    yesBtn.Click += delegate
-                    {
-                        dialog.Dismiss();
-                    };
-                }
-            };
         }
 
         private void mSearch_TextChanged(object sender, Android.Text.TextChangedEventArgs e)
@@ -551,6 +510,37 @@ namespace buylist
                     //toggle value
                     mAnimatedDown = !mAnimatedDown;
                     return true;
+                case Resource.Id.show_cart:
+                    if (0 != get_budget())
+                    {
+                        //start this activity only if budget is already set
+                        StartActivity(typeof(DPfinallistActivity));
+                    }
+                    else
+                    {
+                        var builder = new AlertDialog.Builder(this)
+                                       .SetTitle("Action Required")
+                                       .SetMessage("You need to set the monthly shopping-budget first!")
+                                       .SetPositiveButton("Ok", (EventHandler<DialogClickEventArgs>)null);
+
+                        var dialog = builder.Create();
+                        dialog.Show();
+
+                        // Get the buttons : inorder to dismiss the dialog from outside
+                        var yesBtn = dialog.GetButton((int)DialogButtonType.Positive);
+                        yesBtn.Click += delegate
+                        {
+                            dialog.Dismiss();
+                        };
+                    }
+                    return true;
+                case Resource.Id.setbudget:
+                    showBudgetDialog();
+                    return true;
+                case Resource.Id.add_items:
+                    showItemInputDlg(dboperations.insert_manually);
+                    return true;
+
                 case Resource.Id.delete_items:
                     //delete_selected_items();
                     delete_item(deleteoptions.delete_selected_items, 0);

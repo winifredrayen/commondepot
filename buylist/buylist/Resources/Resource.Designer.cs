@@ -158,7 +158,10 @@ namespace buylist
 			public const int Icon = 2130837527;
 			
 			// aapt resource value: 0x7f020018
-			public const int shape_rounded_bluegray = 2130837528;
+			public const int selector = 2130837528;
+			
+			// aapt resource value: 0x7f020019
+			public const int shape_rounded_bluegray = 2130837529;
 			
 			static Drawable()
 			{
@@ -173,113 +176,143 @@ namespace buylist
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f090023
-			public const int about = 2131296291;
+			// aapt resource value: 0x7f09002d
+			public const int about = 2131296301;
 			
-			// aapt resource value: 0x7f090020
-			public const int add_items = 2131296288;
-			
-			// aapt resource value: 0x7f090003
-			public const int additem = 2131296259;
-			
-			// aapt resource value: 0x7f090009
-			public const int budgetvalue = 2131296265;
-			
-			// aapt resource value: 0x7f09001d
-			public const int cbxStart = 2131296285;
-			
-			// aapt resource value: 0x7f090022
-			public const int clear_items = 2131296290;
-			
-			// aapt resource value: 0x7f090021
-			public const int delete_all_items = 2131296289;
-			
-			// aapt resource value: 0x7f09001f
-			public const int delete_items = 2131296287;
-			
-			// aapt resource value: 0x7f090014
-			public const int descripion1 = 2131296276;
-			
-			// aapt resource value: 0x7f090015
-			public const int descripion2 = 2131296277;
-			
-			// aapt resource value: 0x7f090016
-			public const int descripion3 = 2131296278;
-			
-			// aapt resource value: 0x7f090017
-			public const int descripion4 = 2131296279;
-			
-			// aapt resource value: 0x7f090007
-			public const int etSearch = 2131296263;
-			
-			// aapt resource value: 0x7f090006
-			public const int existinglist = 2131296262;
-			
-			// aapt resource value: 0x7f090001
-			public const int finallist = 2131296257;
-			
-			// aapt resource value: 0x7f090004
-			public const int getbudget = 2131296260;
-			
-			// aapt resource value: 0x7f090018
-			public const int gobutton = 2131296280;
-			
-			// aapt resource value: 0x7f090000
-			public const int help_header = 2131296256;
-			
-			// aapt resource value: 0x7f09000b
-			public const int item_brief = 2131296267;
-			
-			// aapt resource value: 0x7f09000c
-			public const int item_cost = 2131296268;
-			
-			// aapt resource value: 0x7f09000e
-			public const int item_desc = 2131296270;
-			
-			// aapt resource value: 0x7f09000d
-			public const int item_priority = 2131296269;
-			
-			// aapt resource value: 0x7f090012
-			public const int itemcheck = 2131296274;
+			// aapt resource value: 0x7f090026
+			public const int add_items = 2131296294;
 			
 			// aapt resource value: 0x7f090011
-			public const int itemcost = 2131296273;
+			public const int budgetvalue = 2131296273;
 			
-			// aapt resource value: 0x7f090002
-			public const int llcontainer = 2131296258;
+			// aapt resource value: 0x7f090025
+			public const int cbxStart = 2131296293;
 			
-			// aapt resource value: 0x7f090013
-			public const int mainheader = 2131296275;
+			// aapt resource value: 0x7f09002c
+			public const int clear_items = 2131296300;
 			
-			// aapt resource value: 0x7f09000f
-			public const int savebtn = 2131296271;
+			// aapt resource value: 0x7f09002b
+			public const int delete_all_items = 2131296299;
 			
-			// aapt resource value: 0x7f09000a
-			public const int savebudget = 2131296266;
-			
-			// aapt resource value: 0x7f09001e
-			public const int search = 2131296286;
-			
-			// aapt resource value: 0x7f090008
-			public const int textView1 = 2131296264;
-			
-			// aapt resource value: 0x7f090010
-			public const int textitem = 2131296272;
-			
-			// aapt resource value: 0x7f09001a
-			public const int txtCost = 2131296282;
+			// aapt resource value: 0x7f090027
+			public const int delete_items = 2131296295;
 			
 			// aapt resource value: 0x7f09001c
-			public const int txtDate = 2131296284;
+			public const int descripion1 = 2131296284;
 			
-			// aapt resource value: 0x7f09001b
-			public const int txtDescription = 2131296283;
+			// aapt resource value: 0x7f09001d
+			public const int descripion2 = 2131296285;
+			
+			// aapt resource value: 0x7f09001e
+			public const int descripion3 = 2131296286;
+			
+			// aapt resource value: 0x7f09001f
+			public const int descripion4 = 2131296287;
+			
+			// aapt resource value: 0x7f090010
+			public const int etSearch = 2131296272;
+			
+			// aapt resource value: 0x7f09000f
+			public const int existinglist = 2131296271;
+			
+			// aapt resource value: 0x7f09000d
+			public const int finallist = 2131296269;
+			
+			// aapt resource value: 0x7f090020
+			public const int gobutton = 2131296288;
+			
+			// aapt resource value: 0x7f09000c
+			public const int help_header = 2131296268;
+			
+			// aapt resource value: 0x7f090001
+			public const int imageView1 = 2131296257;
+			
+			// aapt resource value: 0x7f090004
+			public const int imageView2 = 2131296260;
+			
+			// aapt resource value: 0x7f090007
+			public const int imageView3 = 2131296263;
+			
+			// aapt resource value: 0x7f09000a
+			public const int imageView4 = 2131296266;
+			
+			// aapt resource value: 0x7f090013
+			public const int item_brief = 2131296275;
+			
+			// aapt resource value: 0x7f090014
+			public const int item_cost = 2131296276;
+			
+			// aapt resource value: 0x7f090016
+			public const int item_desc = 2131296278;
+			
+			// aapt resource value: 0x7f090015
+			public const int item_priority = 2131296277;
+			
+			// aapt resource value: 0x7f09001a
+			public const int itemcheck = 2131296282;
 			
 			// aapt resource value: 0x7f090019
-			public const int txtTitle = 2131296281;
+			public const int itemcost = 2131296281;
+			
+			// aapt resource value: 0x7f090000
+			public const int linearLayout1 = 2131296256;
+			
+			// aapt resource value: 0x7f090003
+			public const int linearLayout2 = 2131296259;
+			
+			// aapt resource value: 0x7f090006
+			public const int linearLayout3 = 2131296262;
+			
+			// aapt resource value: 0x7f090009
+			public const int linearLayout4 = 2131296265;
+			
+			// aapt resource value: 0x7f09000e
+			public const int llcontainer = 2131296270;
+			
+			// aapt resource value: 0x7f09001b
+			public const int mainheader = 2131296283;
+			
+			// aapt resource value: 0x7f090017
+			public const int savebtn = 2131296279;
+			
+			// aapt resource value: 0x7f090012
+			public const int savebudget = 2131296274;
+			
+			// aapt resource value: 0x7f09002a
+			public const int search = 2131296298;
+			
+			// aapt resource value: 0x7f090029
+			public const int setbudget = 2131296297;
+			
+			// aapt resource value: 0x7f090028
+			public const int show_cart = 2131296296;
+			
+			// aapt resource value: 0x7f090002
+			public const int textView1 = 2131296258;
 			
 			// aapt resource value: 0x7f090005
-			public const int whattobuy = 2131296261;
+			public const int textView2 = 2131296261;
+			
+			// aapt resource value: 0x7f090008
+			public const int textView3 = 2131296264;
+			
+			// aapt resource value: 0x7f09000b
+			public const int textView4 = 2131296267;
+			
+			// aapt resource value: 0x7f090018
+			public const int textitem = 2131296280;
+			
+			// aapt resource value: 0x7f090022
+			public const int txtCost = 2131296290;
+			
+			// aapt resource value: 0x7f090024
+			public const int txtDate = 2131296292;
+			
+			// aapt resource value: 0x7f090023
+			public const int txtDescription = 2131296291;
+			
+			// aapt resource value: 0x7f090021
+			public const int txtTitle = 2131296289;
 			
 			static Id()
 			{
@@ -295,25 +328,28 @@ namespace buylist
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int dpoutput = 2130903040;
+			public const int actiobar_custom = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int existinglistview = 2130903041;
+			public const int dpoutput = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int inputdialogbox = 2130903042;
+			public const int existinglistview = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int ItemInputForm = 2130903043;
+			public const int inputdialogbox = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int listview_row = 2130903044;
+			public const int ItemInputForm = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int Main = 2130903045;
+			public const int listview_row = 2130903045;
 			
 			// aapt resource value: 0x7f030006
-			public const int row = 2130903046;
+			public const int Main = 2130903046;
+			
+			// aapt resource value: 0x7f030007
+			public const int row = 2130903047;
 			
 			static Layout()
 			{
