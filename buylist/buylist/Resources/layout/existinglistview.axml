@@ -11,6 +11,7 @@
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fadeScrollbars="false"
             android:id="@+id/existinglist"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="5dp" />

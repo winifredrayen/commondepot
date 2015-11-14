@@ -16,6 +16,7 @@ using System.Net;
 using HtmlAgilityPack;
 using Android.Views.InputMethods;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace buylist
 {
@@ -40,6 +41,12 @@ namespace buylist
         private bool mAnimatedDown;
         private bool misAnimating;
 
+        private enum scrolloptions
+        {
+            scroll_none,
+            scroll_to_top,
+            scroll_to_bottom
+        }
         private enum deleteoptions
         {
             delete_this_item,
@@ -56,7 +63,7 @@ namespace buylist
         {
             base.OnResume();
             //inorder to refresh the list if you move back & forth this activity
-            dbupdateUI();
+            dbupdateUI(scrolloptions.scroll_to_bottom);
         }
         //------------------------------------------------------------------------//
         protected override void OnCreate(Bundle bundle)
@@ -74,13 +81,15 @@ namespace buylist
 
             m_adapter = new ListViewAdapter(this, mItemList,m_queue_for_deletion);
             mListview = FindViewById<ListView>(Resource.Id.existinglist);
+
+            mListview.SmoothScrollbarEnabled = true;
             m_adapter.mOnItemCheck += OnCheckItemClick;
             mListview.Adapter = m_adapter;
             mListview.ItemClick += OnListViewItemClick;
             mListview.ItemLongClick += onLongItemClick;
             mListview.TextFilterEnabled = true;
 
-            dbupdateUI();
+            dbupdateUI(scrolloptions.scroll_to_bottom);
 
             /**Search bar implementation **/
             mSearch = FindViewById<EditText>(Resource.Id.etSearch);
@@ -242,6 +251,10 @@ namespace buylist
                             temp_item.ItemBrief = temp_item.ItemDescription;
                             temp_item.ItemDescription = "";
                         }
+                    if( temp_item.ItemBrief.Contains(temp_item.ItemDescription) )
+                        {
+                            temp_item.ItemDescription = "";
+                        }
                         ThreadPool.QueueUserWorkItem(o => SlowMethod(temp_item));
                     }
                     catch (Exception ex)
@@ -363,7 +376,7 @@ namespace buylist
                         dbhelper.delete_rows(item_id);
                     }
 
-                    dbupdateUI();
+                    dbupdateUI(scrolloptions.scroll_to_top);
                     dialog.Dismiss();
                 };
                 noBtn.Click += delegate
@@ -470,7 +483,7 @@ namespace buylist
             var records = dbhelper.get_total_records();
             Console.WriteLine("DB Update :" + result + " Number of records : ", records);
 
-            dbupdateUI();
+            dbupdateUI(scrolloptions.scroll_to_bottom);
         }
         //------------------------------------------------------------------------//
         private void OnErrorHandler(object sender, OnShopItemError e)
@@ -608,7 +621,7 @@ namespace buylist
         }
         //------------------------------------------------------------------------//
         //UI operation: we need to find a neat way, as to do this operation async and tie this with UI thread later on
-        private void dbupdateUI()
+        async void dbupdateUI(scrolloptions sclopt)
         {
             if( null == mItemList)
                 mItemList = new ObservableCollection<ShopItem>();
@@ -643,6 +656,22 @@ namespace buylist
                 }
             }
             m_adapter.NotifyDataSetChanged();
+
+            switch (sclopt)
+            {
+                case scrolloptions.scroll_to_bottom:
+                    await Task.Delay(1000);
+                    mListview.SmoothScrollToPosition(m_adapter.Count - 1);
+                    break;
+                case scrolloptions.scroll_to_top:
+                    await Task.Delay(1000);
+                    mListview.SmoothScrollToPosition(0);
+                    break;
+                default:
+                case scrolloptions.scroll_none:
+                    break;
+            }
+            
         }
 
         private void OnListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)

@@ -176,26 +176,26 @@ namespace buylist
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f090024
-			public const int about = 2131296292;
+			// aapt resource value: 0x7f090025
+			public const int about = 2131296293;
 			
-			// aapt resource value: 0x7f09001e
-			public const int add_items = 2131296286;
+			// aapt resource value: 0x7f09001f
+			public const int add_items = 2131296287;
 			
 			// aapt resource value: 0x7f090006
 			public const int budgetvalue = 2131296262;
 			
-			// aapt resource value: 0x7f09001c
-			public const int cbxStart = 2131296284;
+			// aapt resource value: 0x7f09001d
+			public const int cbxStart = 2131296285;
+			
+			// aapt resource value: 0x7f090024
+			public const int clear_items = 2131296292;
 			
 			// aapt resource value: 0x7f090023
-			public const int clear_items = 2131296291;
+			public const int delete_all_items = 2131296291;
 			
-			// aapt resource value: 0x7f090022
-			public const int delete_all_items = 2131296290;
-			
-			// aapt resource value: 0x7f090020
-			public const int delete_items = 2131296288;
+			// aapt resource value: 0x7f090021
+			public const int delete_items = 2131296289;
 			
 			// aapt resource value: 0x7f090011
 			public const int descripion1 = 2131296273;
@@ -242,8 +242,8 @@ namespace buylist
 			// aapt resource value: 0x7f09000e
 			public const int itemcost = 2131296270;
 			
-			// aapt resource value: 0x7f090017
-			public const int linearLayoutModel = 2131296279;
+			// aapt resource value: 0x7f090018
+			public const int linearLayoutModel = 2131296280;
 			
 			// aapt resource value: 0x7f090002
 			public const int llcontainer = 2131296258;
@@ -254,20 +254,23 @@ namespace buylist
 			// aapt resource value: 0x7f090016
 			public const int plotViewModel = 2131296278;
 			
+			// aapt resource value: 0x7f090017
+			public const int questionListSV = 2131296279;
+			
 			// aapt resource value: 0x7f09000c
 			public const int savebtn = 2131296268;
 			
 			// aapt resource value: 0x7f090007
 			public const int savebudget = 2131296263;
 			
-			// aapt resource value: 0x7f090021
-			public const int search = 2131296289;
+			// aapt resource value: 0x7f090022
+			public const int search = 2131296290;
 			
-			// aapt resource value: 0x7f09001d
-			public const int setbudget = 2131296285;
+			// aapt resource value: 0x7f09001e
+			public const int setbudget = 2131296286;
 			
-			// aapt resource value: 0x7f09001f
-			public const int show_cart = 2131296287;
+			// aapt resource value: 0x7f090020
+			public const int show_cart = 2131296288;
 			
 			// aapt resource value: 0x7f090005
 			public const int textView1 = 2131296261;
@@ -275,17 +278,17 @@ namespace buylist
 			// aapt resource value: 0x7f09000d
 			public const int textitem = 2131296269;
 			
-			// aapt resource value: 0x7f090019
-			public const int txtCost = 2131296281;
+			// aapt resource value: 0x7f09001a
+			public const int txtCost = 2131296282;
+			
+			// aapt resource value: 0x7f09001c
+			public const int txtDate = 2131296284;
 			
 			// aapt resource value: 0x7f09001b
-			public const int txtDate = 2131296283;
+			public const int txtDescription = 2131296283;
 			
-			// aapt resource value: 0x7f09001a
-			public const int txtDescription = 2131296282;
-			
-			// aapt resource value: 0x7f090018
-			public const int txtTitle = 2131296280;
+			// aapt resource value: 0x7f090019
+			public const int txtTitle = 2131296281;
 			
 			static Id()
 			{

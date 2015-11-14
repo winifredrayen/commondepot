@@ -29,7 +29,8 @@ namespace buylist
         private PlotView mPlotView;
         private LinearLayout mLLayoutModel;
 
-        public static string[] colors = new string[] { "#7DA137", "#6EA6F3", "#999999", "#3B8DA5", "#F0BA22", "#EC8542" };
+        public static string[] colors = new string[] { "#7DA137", "#3B8DA5", "#F0BA22", "#1E90FF",
+            "#97B35E", "#00E5EE","#EC8542","#758FD4","#D475B4","#00FF83","#E066FF","#5B37A1" };
 
         protected override void OnResume()
         {
@@ -86,18 +87,30 @@ namespace buylist
         {
             int i = 0;
             mLLayoutModel.RemoveAllViews();
+
             List<PieSlice> return_slices = new List<PieSlice>();
+            /*This needs to be corrected*/
+            TextView mainlabel = new TextView(this);
+            mainlabel.TextSize = 14;
+            LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
+            llp.SetMargins(5, 0, 0, 5);
+            mainlabel.LayoutParameters = llp;
+            mainlabel.SetTextColor(Android.Graphics.Color.Black);
+            mainlabel.Text = "Legends for reference:";
+
+            mLLayoutModel.AddView(mainlabel);
+
             foreach (var item in m_sortedlist)
             {
                 if (i >= colors.Length)
                 {
                     i = 0;
                 }
-                return_slices.Add(new PieSlice(item.ItemBrief, item.ItemCost) { Fill = OxyColor.Parse(colors[i]) });
+                return_slices.Add(new PieSlice(item.ItemBrief, item.ItemCost) { Fill = OxyColor.Parse(colors[i]), IsExploded = true });
 
                 LinearLayout hLayot = new LinearLayout(this);
                 hLayot.Orientation = Android.Widget.Orientation.Horizontal;
-                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WrapContent, LinearLayout.LayoutParams.WrapContent);
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, LinearLayout.LayoutParams.WrapContent);
                 hLayot.LayoutParameters = param;
 
                 //Add views with colors
@@ -105,13 +118,13 @@ namespace buylist
 
                 View mView = new View(this);
 
-                lp.TopMargin = 5;
+                lp.TopMargin = 7;
                 mView.LayoutParameters = lp;
                 mView.SetBackgroundColor(Android.Graphics.Color.ParseColor(colors[i++]));
 
                 //Add titles
                 TextView label = new TextView(this);
-                label.TextSize = 13;
+                label.TextSize = 14;
                 label.SetTextColor(Android.Graphics.Color.Black);
                 string textlabel = item.ItemBrief + ": $" + item.ItemCost;
                 label.Text = string.Join(" ", textlabel);
