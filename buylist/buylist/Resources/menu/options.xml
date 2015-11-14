@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
     <menu xmlns:android="http://schemas.android.com/apk/res/android">
-        <item android:id="@+id/delete_items"
-              android:title="@string/delete_m_items"/>
-        <item android:id="@+id/delete_all_items"
-          android:title="@string/delete_all_items"/>
-        <item android:id="@+id/clear_items"
-          android:title="@string/clear" />
         <item android:id="@+id/about"
-              android:title="@string/helpsetting" />
+              android:showAsAction="always"
+              android:icon="@drawable/ic_action_info"
+              android:title="@string/about" />
+        <item android:id="@+id/apphelp"
+              android:showAsAction="always"
+              android:icon="@drawable/ic_action_help"
+              android:title="@string/bloghelp" />
     </menu>

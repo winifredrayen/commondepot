@@ -68,7 +68,35 @@ namespace buylist
 
             refreshUI();
         }
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            MenuInflater.Inflate(Resource.Menu.options, menu);
+            return base.OnCreateOptionsMenu(menu);
+        }
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            switch (item.ItemId)
+            {
+                case Resource.Id.about:
+                    Context context = this.ApplicationContext;
+                    var Version = context.PackageManager.GetPackageInfo(context.PackageName, 0);
 
+                    String ver_info = String.Format("Smart-Shop {0}.0.{1}",
+                         Version.VersionName, Version.VersionCode);
+
+                    Toast.MakeText(this, ver_info, ToastLength.Long).Show();
+                    return true;
+                case Resource.Id.apphelp:
+                    {
+                        var uri = Android.Net.Uri.Parse("https://majochristo.wordpress.com/");
+                        var intent = new Intent(Intent.ActionView, uri);
+                        StartActivity(intent);
+                    }
+                    return true;
+                default:
+                    return base.OnOptionsItemSelected(item);
+            }
+        }
         public PlotModel CreatePlotModel(float unallocated)
         {
             var plotModel = new PlotModel { Title = "This Month's Split up" };

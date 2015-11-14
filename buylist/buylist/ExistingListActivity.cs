@@ -561,23 +561,15 @@ namespace buylist
                 case Resource.Id.add_items:
                     showItemInputDlg(dboperations.insert_manually);
                     return true;
-
                 case Resource.Id.delete_items:
                     //delete_selected_items();
                     delete_item(deleteoptions.delete_selected_items, 0);
-                    return true;
-                case Resource.Id.delete_all_items:
-                    //delete_selected_items(true);
-                    delete_item(deleteoptions.delete_all_items, 0);
-                    return true;
-                case Resource.Id.clear_items:
-                    m_adapter.NotifyDataSetChanged();
                     return true;
                 case Resource.Id.about:
                     Context context = this.ApplicationContext;
                     var Version = context.PackageManager.GetPackageInfo(context.PackageName, 0);
 
-                    String ver_info = String.Format("Smart-Shop {0}.0.{1}",
+                    String ver_info = String.Format("Shop off {0}.0.{1}",
                          Version.VersionName, Version.VersionCode);
                     
                     Toast.MakeText(this, ver_info, ToastLength.Long).Show();
