@@ -12,21 +12,29 @@ using Android.Widget;
 using Android.Preferences;
 using System.Collections.ObjectModel;
 
+/*experimental Piechart*/
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
+using OxyPlot.Xamarin.Android;
+
 namespace buylist
 {
-    [Activity(Label = "Happy shopping!", Icon = "@drawable/icon")]
+    [Activity(Label = "Best fitting cart", Icon = "@drawable/icon")]
     public class DPfinallistActivity : Activity
     {
-        private ListView mListview;
         private ObservableCollection<ShopItem> m_sortedlist = new ObservableCollection<ShopItem>();
-        ListViewAdapter m_adapter;
+
+        /*experimental Piechart*/
+        private PlotView mPlotView;
+        private LinearLayout mLLayoutModel;
+
+        public static string[] colors = new string[] { "#7DA137", "#6EA6F3", "#999999", "#3B8DA5", "#F0BA22", "#EC8542" };
 
         protected override void OnResume()
         {
             base.OnResume();
-            //inorder to refresh the list if you move back & forth this activity
             refreshUI();
-
         }
         private void refreshUI()
         {
@@ -43,29 +51,89 @@ namespace buylist
             foreach (var item in item_collection)
             {
                 m_sortedlist.Add(item);
+                budget -= (float)item.ItemCost;
             }
-            m_adapter.NotifyDataSetChanged();
+            mPlotView.Model = CreatePlotModel(budget);
         }
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-            SetContentView(Resource.Layout.dpoutput);
+            SetContentView(Resource.Layout.piechart);
 
-            m_adapter = new ListViewAdapter(this, m_sortedlist,null);
-            mListview = FindViewById<ListView>(Resource.Id.finallist);
-            m_adapter.mOnItemCheck += onItemCheck;
-            mListview.Adapter = m_adapter;
+            /*experimental*/
+
+            mPlotView = FindViewById<PlotView>(Resource.Id.plotViewModel);
+            mLLayoutModel = FindViewById<LinearLayout>(Resource.Id.linearLayoutModel);
 
             refreshUI();
         }
 
-        private void onItemCheck(object sender, onItemChecked e)
+        public PlotModel CreatePlotModel(float unallocated)
         {
-            if (!e.checkedvalue)
-                return;
+            var plotModel = new PlotModel { Title = "This Month's Split up" };
 
+            var pieSeries = new PieSeries();
+            pieSeries.InsideLabelPosition = 0.0;
+            pieSeries.InsideLabelFormat = null;
+            pieSeries.OutsideLabelFormat = null;
+            /*we need the slice data from the list */
+            pieSeries.Slices = GetPieSlices(unallocated);
+            plotModel.Series.Add(pieSeries);
+            return plotModel;
+        }
+
+        private List<PieSlice> GetPieSlices( float unallocated)
+        {
+            int i = 0;
+            mLLayoutModel.RemoveAllViews();
+            List<PieSlice> return_slices = new List<PieSlice>();
+            foreach (var item in m_sortedlist)
+            {
+                if (i >= colors.Length)
+                {
+                    i = 0;
+                }
+                return_slices.Add(new PieSlice(item.ItemBrief, item.ItemCost) { Fill = OxyColor.Parse(colors[i]) });
+
+                LinearLayout hLayot = new LinearLayout(this);
+                hLayot.Orientation = Android.Widget.Orientation.Horizontal;
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WrapContent, LinearLayout.LayoutParams.WrapContent);
+                hLayot.LayoutParameters = param;
+
+                //Add views with colors
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(30, 30);
+
+                View mView = new View(this);
+
+                lp.TopMargin = 5;
+                mView.LayoutParameters = lp;
+                mView.SetBackgroundColor(Android.Graphics.Color.ParseColor(colors[i++]));
+
+                //Add titles
+                TextView label = new TextView(this);
+                label.TextSize = 13;
+                label.SetTextColor(Android.Graphics.Color.Black);
+                string textlabel = item.ItemBrief + ": $" + item.ItemCost;
+                label.Text = string.Join(" ", textlabel);
+                param.LeftMargin = 10;
+                label.LayoutParameters = param;
+
+                hLayot.Tag = item.ID.ToString();
+                hLayot.AddView(mView);
+                hLayot.AddView(label);
+
+                hLayot.Click += HLayot_Click;
+                mLLayoutModel.AddView(hLayot);
+            }
+            return return_slices;
+        }
+
+        private void HLayot_Click(object sender, EventArgs e)
+        {
+            var layout = sender as LinearLayout;
+            Console.WriteLine("selected:{0}", layout.Tag);
             var builder = new AlertDialog.Builder(this)
-                .SetTitle("Shopping Complete")
+                .SetTitle("Shopping Completed")
                 .SetMessage("Have you purchased this item already??")
                 .SetNegativeButton("No", (EventHandler<DialogClickEventArgs>)null)
                 .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null);
@@ -81,10 +149,10 @@ namespace buylist
             yesBtn.Click += delegate
             {
                 //create the db helper class
-                var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath,this);
+                var dbhelper = new DBHelper(DBGlobal.DatabasebFilePath, this);
                 //create or open shopitem database
                 var result = dbhelper.create_database();
-                double cost = dbhelper.delete_rows(e.ID);
+                double cost = dbhelper.delete_rows(Int32.Parse(layout.Tag.ToString()));
                 refreshUI();
                 reduce_budget((int)cost);
                 dialog.Dismiss();
@@ -96,7 +164,6 @@ namespace buylist
                 refreshUI();
                 dialog.Dismiss();
             };
-
         }
 
         private void reduce_budget(int cost)

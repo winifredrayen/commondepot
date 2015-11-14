@@ -1,24 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/setbudget"
+        android:title="set budget"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_action_budget">
+    </item>
     <item android:id="@+id/add_items"
       android:title="@string/add_items"
       android:showAsAction="always"
       android:icon="@drawable/ic_action_add">
     </item>
-    <item android:id="@+id/delete_items"
-          android:title="@string/delete_m_items"
-          android:showAsAction="always"
-          android:icon="@drawable/ic_action_delete">
-    </item>
     <item android:id="@+id/show_cart"
-          android:title="show the cart"
-          android:showAsAction="always"
-          android:icon="@drawable/ic_action_shopcart">
-    </item>
-    <item android:id="@+id/setbudget"
-        android:title="set budget"
+        android:title="show the cart"
         android:showAsAction="always"
-        android:icon="@drawable/ic_action_budget">
+        android:icon="@drawable/ic_action_shopcart">
+    </item>
+    <item android:id="@+id/delete_items"
+      android:title="@string/delete_m_items"
+      android:showAsAction="always"
+      android:icon="@drawable/ic_action_delete">
     </item>
     <item android:id="@+id/search"
         android:showAsAction="always"
