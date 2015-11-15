@@ -69,6 +69,21 @@ namespace buylist
 		public partial class Color
 		{
 			
+			// aapt resource value: 0x7f050003
+			public const int high = 2131034115;
+			
+			// aapt resource value: 0x7f050002
+			public const int highest = 2131034114;
+			
+			// aapt resource value: 0x7f050005
+			public const int low = 2131034117;
+			
+			// aapt resource value: 0x7f050006
+			public const int lowest = 2131034118;
+			
+			// aapt resource value: 0x7f050004
+			public const int normal = 2131034116;
+			
 			// aapt resource value: 0x7f050000
 			public const int opaque_red = 2131034112;
 			
@@ -194,23 +209,23 @@ namespace buylist
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f090023
-			public const int about = 2131296291;
-			
-			// aapt resource value: 0x7f09001f
-			public const int add_items = 2131296287;
-			
 			// aapt resource value: 0x7f090024
-			public const int apphelp = 2131296292;
+			public const int about = 2131296292;
+			
+			// aapt resource value: 0x7f090020
+			public const int add_items = 2131296288;
+			
+			// aapt resource value: 0x7f090025
+			public const int apphelp = 2131296293;
 			
 			// aapt resource value: 0x7f090006
 			public const int budgetvalue = 2131296262;
 			
-			// aapt resource value: 0x7f09001d
-			public const int cbxStart = 2131296285;
+			// aapt resource value: 0x7f09001e
+			public const int cbxStart = 2131296286;
 			
-			// aapt resource value: 0x7f090021
-			public const int delete_items = 2131296289;
+			// aapt resource value: 0x7f090022
+			public const int delete_items = 2131296290;
 			
 			// aapt resource value: 0x7f090004
 			public const int etSearch = 2131296260;
@@ -269,6 +284,9 @@ namespace buylist
 			// aapt resource value: 0x7f090016
 			public const int plotViewModel = 2131296278;
 			
+			// aapt resource value: 0x7f090019
+			public const int prioritypanel = 2131296281;
+			
 			// aapt resource value: 0x7f090017
 			public const int questionListSV = 2131296279;
 			
@@ -278,29 +296,29 @@ namespace buylist
 			// aapt resource value: 0x7f090007
 			public const int savebudget = 2131296263;
 			
-			// aapt resource value: 0x7f090022
-			public const int search = 2131296290;
+			// aapt resource value: 0x7f090023
+			public const int search = 2131296291;
 			
-			// aapt resource value: 0x7f09001e
-			public const int setbudget = 2131296286;
+			// aapt resource value: 0x7f09001f
+			public const int setbudget = 2131296287;
 			
-			// aapt resource value: 0x7f090020
-			public const int show_cart = 2131296288;
+			// aapt resource value: 0x7f090021
+			public const int show_cart = 2131296289;
 			
 			// aapt resource value: 0x7f090005
 			public const int textView1 = 2131296261;
 			
-			// aapt resource value: 0x7f09001a
-			public const int txtCost = 2131296282;
+			// aapt resource value: 0x7f09001b
+			public const int txtCost = 2131296283;
+			
+			// aapt resource value: 0x7f09001d
+			public const int txtDate = 2131296285;
 			
 			// aapt resource value: 0x7f09001c
-			public const int txtDate = 2131296284;
+			public const int txtDescription = 2131296284;
 			
-			// aapt resource value: 0x7f09001b
-			public const int txtDescription = 2131296283;
-			
-			// aapt resource value: 0x7f090019
-			public const int txtTitle = 2131296281;
+			// aapt resource value: 0x7f09001a
+			public const int txtTitle = 2131296282;
 			
 			// aapt resource value: 0x7f090015
 			public const int viewpager = 2131296277;

@@ -352,6 +352,7 @@ namespace buylist
                     .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null);
 
                 var dialog = builder.Create();
+                dialog.Window.Attributes.WindowAnimations = Resource.Style.dialog_animation;
                 dialog.Show();
 
                 // Get the buttons.
@@ -546,6 +547,7 @@ namespace buylist
                                        .SetPositiveButton("Ok", (EventHandler<DialogClickEventArgs>)null);
 
                         var dialog = builder.Create();
+                        dialog.Window.Attributes.WindowAnimations = Resource.Style.dialog_animation;
                         dialog.Show();
 
                         // Get the buttons : inorder to dismiss the dialog from outside

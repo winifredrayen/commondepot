@@ -2,4 +2,9 @@
 <resources>
    <color name="opaque_red">#f00</color>
    <color name="translucent_red">#80ff0000</color>
+    <color name="highest">#CD2626</color>
+    <color name="high">#FF7D40</color>
+    <color name="normal">#FFC125</color>
+    <color name="low">#9ACD32</color>
+    <color name="lowest">#C1CDC1</color>
 </resources>

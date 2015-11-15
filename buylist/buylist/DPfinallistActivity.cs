@@ -180,6 +180,7 @@ namespace buylist
                 .SetPositiveButton("Yes", (EventHandler<DialogClickEventArgs>)null);
 
             var dialog = builder.Create();
+            dialog.Window.Attributes.WindowAnimations = Resource.Style.dialog_animation;
             dialog.Show();
 
             // Get the buttons.

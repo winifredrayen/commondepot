@@ -13,6 +13,7 @@ using Java.Lang;
 using System.Collections.ObjectModel;
 using Android.Database;
 using Android.Graphics;
+using Android.Content.Res;
 
 namespace buylist
 {
@@ -87,12 +88,15 @@ namespace buylist
                 //if not create one
                 row = LayoutInflater.From(mContext).Inflate(Resource.Layout.row, null, false);
             }
-            //Android.Graphics.Color bgcolor = getRowColor(mItemList[position].ItemPriority);
+            Android.Graphics.Color bgcolor = getRowColor(mItemList[position].ItemPriority);
 
             TextView tview = row.FindViewById<TextView>(Resource.Id.txtTitle);
             TextView itemcost = row.FindViewById<TextView>(Resource.Id.txtCost);
             TextView dview = row.FindViewById<TextView>(Resource.Id.txtDescription);
             CheckBox chckbox = row.FindViewById<CheckBox>(Resource.Id.cbxStart);
+            TextView colorpanel = row.FindViewById<TextView>(Resource.Id.prioritypanel);
+            colorpanel.SetBackgroundColor(bgcolor);
+
 
             tview.Text = mItemList[position].ItemBrief;
             itemcost.Text = mItemList[position].ItemCost.ToString();
@@ -115,6 +119,34 @@ namespace buylist
 
             return row;
         }
+
+        private Android.Graphics.Color getRowColor(double itemPriority)
+        {
+            Android.Graphics.Color row_color = new Color();
+            if (itemPriority > 4 && itemPriority <= 5)
+            {
+                row_color = mContext.Resources.GetColor(Resource.Color.highest);
+            }
+            else if( itemPriority > 3 && itemPriority <= 4)
+            {
+                row_color = mContext.Resources.GetColor(Resource.Color.high);
+            }
+            else if (itemPriority > 2 && itemPriority <= 3)
+            {
+                row_color = mContext.Resources.GetColor(Resource.Color.normal);
+            }
+            else if (itemPriority > 1 && itemPriority <= 2)
+            {
+                row_color = mContext.Resources.GetColor(Resource.Color.low);
+            }
+            else if (itemPriority > 0 && itemPriority <= 1)
+            {
+                row_color = mContext.Resources.GetColor(Resource.Color.lowest);
+            }
+
+            return row_color;
+        }
+
         private void onCheckItem(object sender, CompoundButton.CheckedChangeEventArgs e)
         {
             CheckBox chckbox = sender as CheckBox;
