@@ -536,6 +536,7 @@ namespace buylist
                     {
                         //start this activity only if budget is already set
                         StartActivity(typeof(DPfinallistActivity));
+                        this.OverridePendingTransition(Resource.Animation.slide_in_top, Resource.Animation.slide_out_bottom);
                     }
                     else
                     {
@@ -665,7 +666,11 @@ namespace buylist
             }
             
         }
-
+        public override void OnBackPressed()
+        {
+            base.OnBackPressed();
+            this.OverridePendingTransition(Resource.Animation.slide_in_top, Resource.Animation.slide_out_bottom);
+        }
         private void OnListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             if(mfiltered_list.Count > 0)

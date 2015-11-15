@@ -309,5 +309,10 @@ namespace buylist
             }
             return filtered_list;
         }
+        public override void OnBackPressed()
+        {
+            base.OnBackPressed();
+            this.OverridePendingTransition(Resource.Animation.slide_in_top, Resource.Animation.slide_out_bottom);
+        }
     }
 }

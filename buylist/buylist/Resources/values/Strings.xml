@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ApplicationName">Buyer\'s List</string>
-    <string name="welcometext">Welcome to Buyer\'s list</string>
+
+    <string name="intro1">Welcome to Shop off</string>
+    <string name="intro2">Queue</string>
+    <string name="intro3">Budget</string>
+    <string name="intro4">Deadline</string>
+    <string name="intro5">Pie-\'Cart\'</string>
+    <string name="desc1">Do you need help organizing your shopping ?</string>
+    <string name="desc2">Use the share button from any shopping app to queue the item.</string>
+    <string name="desc3">Set a long term monthly shopping budget</string>
+    <string name="desc4">What is this item\'s priority?</string>
+    <string name="desc5">Based on the available parameters, we\'ll give you the analysis</string>
+    
+    <string name="welcometext">Welcome to Shop off, let us give you a quick introduction.</string>
     <string name="first_line">Are you looking to buy something?</string>
     <string name="second_line">What is it\'s approximate price?</string>
     <string name="third_line">Do you have a priority?</string>

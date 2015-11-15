@@ -103,6 +103,9 @@
     <Compile Include="DPfinallistActivity.cs" />
     <Compile Include="ExistingListActivity.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="IntroAdapter.cs" />
+    <Compile Include="IntroFragment.cs" />
+    <Compile Include="IntroPageTransformer.cs" />
     <Compile Include="ListViewAdapter.cs" />
     <Compile Include="MyAnimation.cs" />
     <Compile Include="selected_table.cs" />
@@ -126,9 +129,6 @@
     <AndroidResource Include="Resources\layout\existinglistview.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\listview_row.axml">
-      <SubType>AndroidResource</SubType>
-    </AndroidResource>
     <AndroidResource Include="Resources\layout\inputdialogbox.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
@@ -139,6 +139,21 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\piechart.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\intro_screen1.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\intro_screen2.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\intro_screen3.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\intro_screen4.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\intro_screen5.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -370,9 +385,6 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\apptheme_btn_default_pressed_holo_light.9.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\values\colors_apptheme.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\values\styles_apptheme.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -413,6 +425,21 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_action_info.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\slide_in_top.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\slide_out_bottom.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_action_list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_action_priority.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_action_queue.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

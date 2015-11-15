@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:background="@drawable/edit_text_style"
-        android:hint="Search List"
+        android:hint="Search Text"
+        android:textColorHint="#D3D3D3"
         android:textColor="#000" />
 </FrameLayout>

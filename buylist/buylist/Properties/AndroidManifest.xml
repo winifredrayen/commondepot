@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="majo.smartshop" android:versionCode="7" android:versionName="1.0" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="majo.smartshop" android:versionName="1.0" android:installLocation="auto" android:versionCode="8">
 	<uses-sdk android:minSdkVersion="19" android:targetSdkVersion="19" />
 	<application android:label="Shop off" android:screenOrientation="portrait" android:icon="@drawable/icon"></application>
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

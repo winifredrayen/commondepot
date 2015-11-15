@@ -32,10 +32,16 @@ namespace buylist
 		{
 			
 			// aapt resource value: 0x7f040000
-			public const int slide_right = 2130968576;
+			public const int slide_in_top = 2130968576;
 			
 			// aapt resource value: 0x7f040001
-			public const int slide_up = 2130968577;
+			public const int slide_out_bottom = 2130968577;
+			
+			// aapt resource value: 0x7f040002
+			public const int slide_right = 2130968578;
+			
+			// aapt resource value: 0x7f040003
+			public const int slide_up = 2130968579;
 			
 			static Animation()
 			{
@@ -62,9 +68,6 @@ namespace buylist
 		
 		public partial class Color
 		{
-			
-			// aapt resource value: 0x7f050002
-			public const int apptheme_color = 2131034114;
 			
 			// aapt resource value: 0x7f050000
 			public const int opaque_red = 2131034112;
@@ -155,19 +158,28 @@ namespace buylist
 			public const int ic_action_info = 2130837526;
 			
 			// aapt resource value: 0x7f020017
-			public const int ic_action_search = 2130837527;
+			public const int ic_action_list = 2130837527;
 			
 			// aapt resource value: 0x7f020018
-			public const int ic_action_shopcart = 2130837528;
+			public const int ic_action_priority = 2130837528;
 			
 			// aapt resource value: 0x7f020019
-			public const int Icon = 2130837529;
+			public const int ic_action_queue = 2130837529;
 			
 			// aapt resource value: 0x7f02001a
-			public const int selector = 2130837530;
+			public const int ic_action_search = 2130837530;
 			
 			// aapt resource value: 0x7f02001b
-			public const int shape_rounded_bluegray = 2130837531;
+			public const int ic_action_shopcart = 2130837531;
+			
+			// aapt resource value: 0x7f02001c
+			public const int Icon = 2130837532;
+			
+			// aapt resource value: 0x7f02001d
+			public const int selector = 2130837533;
+			
+			// aapt resource value: 0x7f02001e
+			public const int shape_rounded_bluegray = 2130837534;
 			
 			static Drawable()
 			{
@@ -200,18 +212,6 @@ namespace buylist
 			// aapt resource value: 0x7f090021
 			public const int delete_items = 2131296289;
 			
-			// aapt resource value: 0x7f090011
-			public const int descripion1 = 2131296273;
-			
-			// aapt resource value: 0x7f090012
-			public const int descripion2 = 2131296274;
-			
-			// aapt resource value: 0x7f090013
-			public const int descripion3 = 2131296275;
-			
-			// aapt resource value: 0x7f090014
-			public const int descripion4 = 2131296276;
-			
 			// aapt resource value: 0x7f090004
 			public const int etSearch = 2131296260;
 			
@@ -221,29 +221,44 @@ namespace buylist
 			// aapt resource value: 0x7f090001
 			public const int finallist = 2131296257;
 			
-			// aapt resource value: 0x7f090015
-			public const int gobutton = 2131296277;
-			
 			// aapt resource value: 0x7f090000
 			public const int help_header = 2131296256;
 			
 			// aapt resource value: 0x7f090008
-			public const int item_brief = 2131296264;
-			
-			// aapt resource value: 0x7f090009
-			public const int item_cost = 2131296265;
-			
-			// aapt resource value: 0x7f09000b
-			public const int item_desc = 2131296267;
-			
-			// aapt resource value: 0x7f09000a
-			public const int item_priority = 2131296266;
+			public const int intro_background = 2131296264;
 			
 			// aapt resource value: 0x7f09000f
-			public const int itemcheck = 2131296271;
+			public const int intro_cart = 2131296271;
 			
 			// aapt resource value: 0x7f09000e
-			public const int itemcost = 2131296270;
+			public const int intro_deadline = 2131296270;
+			
+			// aapt resource value: 0x7f09000b
+			public const int intro_description = 2131296267;
+			
+			// aapt resource value: 0x7f09000a
+			public const int intro_list = 2131296266;
+			
+			// aapt resource value: 0x7f09000d
+			public const int intro_priority = 2131296269;
+			
+			// aapt resource value: 0x7f09000c
+			public const int intro_queue = 2131296268;
+			
+			// aapt resource value: 0x7f090009
+			public const int intro_title = 2131296265;
+			
+			// aapt resource value: 0x7f090010
+			public const int item_brief = 2131296272;
+			
+			// aapt resource value: 0x7f090011
+			public const int item_cost = 2131296273;
+			
+			// aapt resource value: 0x7f090013
+			public const int item_desc = 2131296275;
+			
+			// aapt resource value: 0x7f090012
+			public const int item_priority = 2131296274;
 			
 			// aapt resource value: 0x7f090018
 			public const int linearLayoutModel = 2131296280;
@@ -251,17 +266,14 @@ namespace buylist
 			// aapt resource value: 0x7f090002
 			public const int llcontainer = 2131296258;
 			
-			// aapt resource value: 0x7f090010
-			public const int mainheader = 2131296272;
-			
 			// aapt resource value: 0x7f090016
 			public const int plotViewModel = 2131296278;
 			
 			// aapt resource value: 0x7f090017
 			public const int questionListSV = 2131296279;
 			
-			// aapt resource value: 0x7f09000c
-			public const int savebtn = 2131296268;
+			// aapt resource value: 0x7f090014
+			public const int savebtn = 2131296276;
 			
 			// aapt resource value: 0x7f090007
 			public const int savebudget = 2131296263;
@@ -278,9 +290,6 @@ namespace buylist
 			// aapt resource value: 0x7f090005
 			public const int textView1 = 2131296261;
 			
-			// aapt resource value: 0x7f09000d
-			public const int textitem = 2131296269;
-			
 			// aapt resource value: 0x7f09001a
 			public const int txtCost = 2131296282;
 			
@@ -292,6 +301,9 @@ namespace buylist
 			
 			// aapt resource value: 0x7f090019
 			public const int txtTitle = 2131296281;
+			
+			// aapt resource value: 0x7f090015
+			public const int viewpager = 2131296277;
 			
 			static Id()
 			{
@@ -316,19 +328,31 @@ namespace buylist
 			public const int inputdialogbox = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int ItemInputForm = 2130903043;
+			public const int intro_screen1 = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int listview_row = 2130903044;
+			public const int intro_screen2 = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int Main = 2130903045;
+			public const int intro_screen3 = 2130903045;
 			
 			// aapt resource value: 0x7f030006
-			public const int piechart = 2130903046;
+			public const int intro_screen4 = 2130903046;
 			
 			// aapt resource value: 0x7f030007
-			public const int row = 2130903047;
+			public const int intro_screen5 = 2130903047;
+			
+			// aapt resource value: 0x7f030008
+			public const int ItemInputForm = 2130903048;
+			
+			// aapt resource value: 0x7f030009
+			public const int Main = 2130903049;
+			
+			// aapt resource value: 0x7f03000a
+			public const int piechart = 2130903050;
+			
+			// aapt resource value: 0x7f03000b
+			public const int row = 2130903051;
 			
 			static Layout()
 			{
@@ -365,56 +389,86 @@ namespace buylist
 			// aapt resource value: 0x7f060000
 			public const int ApplicationName = 2131099648;
 			
-			// aapt resource value: 0x7f06000e
-			public const int about = 2131099662;
+			// aapt resource value: 0x7f060018
+			public const int about = 2131099672;
 			
-			// aapt resource value: 0x7f060010
-			public const int add_items = 2131099664;
+			// aapt resource value: 0x7f06001a
+			public const int add_items = 2131099674;
 			
-			// aapt resource value: 0x7f060011
-			public const int bloghelp = 2131099665;
+			// aapt resource value: 0x7f06001b
+			public const int bloghelp = 2131099675;
 			
-			// aapt resource value: 0x7f06000f
-			public const int clear = 2131099663;
+			// aapt resource value: 0x7f060019
+			public const int clear = 2131099673;
 			
-			// aapt resource value: 0x7f06000d
-			public const int delete_all_items = 2131099661;
+			// aapt resource value: 0x7f060017
+			public const int delete_all_items = 2131099671;
 			
-			// aapt resource value: 0x7f06000c
-			public const int delete_m_items = 2131099660;
-			
-			// aapt resource value: 0x7f06000a
-			public const int description = 2131099658;
-			
-			// aapt resource value: 0x7f060002
-			public const int first_line = 2131099650;
-			
-			// aapt resource value: 0x7f060005
-			public const int fourth_line = 2131099653;
+			// aapt resource value: 0x7f060016
+			public const int delete_m_items = 2131099670;
 			
 			// aapt resource value: 0x7f060006
-			public const int gobtn = 2131099654;
-			
-			// aapt resource value: 0x7f06000b
-			public const int help = 2131099659;
-			
-			// aapt resource value: 0x7f060009
-			public const int item_cost = 2131099657;
-			
-			// aapt resource value: 0x7f060008
-			public const int item_name = 2131099656;
+			public const int desc1 = 2131099654;
 			
 			// aapt resource value: 0x7f060007
-			public const int save = 2131099655;
+			public const int desc2 = 2131099655;
 			
-			// aapt resource value: 0x7f060003
-			public const int second_line = 2131099651;
+			// aapt resource value: 0x7f060008
+			public const int desc3 = 2131099656;
 			
-			// aapt resource value: 0x7f060004
-			public const int third_line = 2131099652;
+			// aapt resource value: 0x7f060009
+			public const int desc4 = 2131099657;
+			
+			// aapt resource value: 0x7f06000a
+			public const int desc5 = 2131099658;
+			
+			// aapt resource value: 0x7f060014
+			public const int description = 2131099668;
+			
+			// aapt resource value: 0x7f06000c
+			public const int first_line = 2131099660;
+			
+			// aapt resource value: 0x7f06000f
+			public const int fourth_line = 2131099663;
+			
+			// aapt resource value: 0x7f060010
+			public const int gobtn = 2131099664;
+			
+			// aapt resource value: 0x7f060015
+			public const int help = 2131099669;
 			
 			// aapt resource value: 0x7f060001
-			public const int welcometext = 2131099649;
+			public const int intro1 = 2131099649;
+			
+			// aapt resource value: 0x7f060002
+			public const int intro2 = 2131099650;
+			
+			// aapt resource value: 0x7f060003
+			public const int intro3 = 2131099651;
+			
+			// aapt resource value: 0x7f060004
+			public const int intro4 = 2131099652;
+			
+			// aapt resource value: 0x7f060005
+			public const int intro5 = 2131099653;
+			
+			// aapt resource value: 0x7f060013
+			public const int item_cost = 2131099667;
+			
+			// aapt resource value: 0x7f060012
+			public const int item_name = 2131099666;
+			
+			// aapt resource value: 0x7f060011
+			public const int save = 2131099665;
+			
+			// aapt resource value: 0x7f06000d
+			public const int second_line = 2131099661;
+			
+			// aapt resource value: 0x7f06000e
+			public const int third_line = 2131099662;
+			
+			// aapt resource value: 0x7f06000b
+			public const int welcometext = 2131099659;
 			
 			static String()
 			{
